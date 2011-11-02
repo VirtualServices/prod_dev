@@ -1,0 +1,43 @@
+# $Id: ja.po,v 1.2 2007/04/24 11:33:22 imagine Exp $
+# -----------------------------------------------------------------------------
+# Japanese translation of Drupal (dhtml_menu.module)
+#
+# Copyright (c) 2006-2007  Drupal Japan  ( http://drupal.jp/ )  /
+#                          Drupal Nippon ( http://drupon.org/ ) /
+#                          Takafumi      ( jp.drupal@imagine **reverse order**)
+#
+# Generated from file:
+#  dhtml_menu.module,v 1.5 2006/12/09 22:12:11 merlinofchaos
+#  dhtml_menu.info,v 1.1 2006/12/09 19:42:54 merlinofchaos
+#
+# -----------------------------------------------------------------------------
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2007-04-05 22:06+0900\n"
+"Last-Translator: Takafumi <jp.drupal@imagine **reverse order**>\n"
+"Language-Team: Drupal Japan / Drupal Nippon\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: dhtml_menu.module:19
+msgid "DHTML: "
+msgstr "DHTML： "
+
+#: dhtml_menu.module:38
+#msgid "Administer"
+#msgstr "管理セクション"
+
+#: dhtml_menu.info:0
+msgid "Adds new menus with DHTML to reduce page refreshes"
+msgstr "ページリフレッシュを減らすために、DHTMLを備えた新しいメニューを加えます。"
+
+#: dhtml_menu.info:0
+msgid "DHTML Menus"
+msgstr "DHTMLメニュー"
+
+#: dhtml_menu.info:0
+msgid "dhtml_menu"
+msgstr "dhtml_menu"
+

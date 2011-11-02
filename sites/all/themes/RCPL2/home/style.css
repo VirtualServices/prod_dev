@@ -1,0 +1,39 @@
+body { 
+text-align:center; /* for IE */ 
+color:#ffffff;
+font-family: verdana;
+
+} 
+
+#wrapper { 
+text-align:left; /* reset text alignment */ 
+width:735px; /* or a percentage, or whatever */ 
+margin:0 auto; /* for the rest */ 
+} 
+
+
+.header {padding:0px 0px 8px 0px;}
+.palm  {padding:0px 10px 10px 0px;}
+
+.fpmenu {background:url(images/purple.gif) repeat-y; color:#FFFFFF; width:230px;}
+
+ul.fpmenu {list-style:none;}
+ul.fpmenuitem li a {color:#ffffff; text-decoration:none; list-style:none; list-style-image:none; font-family:Verdana; font-size:14px;}
+ul.fpmenuitem li a:hover { text-decoration:underline;}
+
+
+.headlines {background:url(images/hp-content.gif) repeat-y; color:#FFFFFF; height:200px; padding:10px; font-size:10px; }
+
+.login {background:url(images/enews.gif) repeat-y; color:#FFFFFF; width:180px; height:150px; font-family:verdana;}
+.featurebar {padding:6px 0px 0px 0px;}
+
+.new {background-color:#6C2C8E; color:#FFFFFF; width:375px; } 
+.accent {width:130px; padding: 0px 0px 0px 10px;}
+
+/* footer */
+#footer { color:#f3f3f3; font-size:13px; padding:16px 0px 19px 45px; background:url(images/bg-bot.gif) top repeat-x; text-align:right;}
+#footer a { color:#f3f3f3;}
+#footer h3 { background:none; padding:0px;}
+.foot { width:935px; margin:0 auto; text-align:center;}
+/* footer end */
+

@@ -1,0 +1,81 @@
+# LANGUAGE translation of Drupal (taxonomy_defaults.module)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from file: taxonomy_defaults.module,v 1.7.2.1 2006/08/10 00:24:59 heine
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2006-08-22 11:59+0200\n"
+"PO-Revision-Date: 2006-08-28 22:04+0100\n"
+"Last-Translator: Jérôme <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-Country: FRANCE\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: ../\n"
+
+#: taxonomy_defaults.module:19
+msgid "Choose default taxonomy terms per node-type."
+msgstr "Permet de définir des termes par défaut par type de noeud."
+
+#: taxonomy_defaults.module:21
+msgid "Below you may select default terms for each node-type. Check the 'active' box next to the vocabulary, then select the terms."
+msgstr "Ci-dessous vous pouvez sélectionner les termes par défaut de chaque type de noeud. Sélectionnez la case 'actif' à coté de la catégorie, puis sélectionnez le terme."
+
+#: taxonomy_defaults.module:22
+msgid "If 'active' appears in <i>italics</i> this vocabulary is not enabled for this node type (on the %url). The terms will be added to the node without appearing on the add and edit pages."
+msgstr "Si 'actif' apparaît en <i>italique</i> ce terme n'est pas permis pour ce type de noeuds (sur la %url). Les termes seront ajoutés au noeud sans apparaître sur la page de création et d'édition."
+
+#: taxonomy_defaults.module:22
+msgid "categories page"
+msgstr "page de catégories"
+
+#: taxonomy_defaults.module:23
+msgid "If 'active' is not in italics, these taxonomy terms will simply be pre-selected on the node/add page for this node-type."
+msgstr "Si 'actif' n'est pas italique, pour ce type de noeuds, ces termes seront simplement présélectionnés sur la page de création de noeuds."
+
+#: taxonomy_defaults.module:83
+msgid "default terms"
+msgstr "termes par défaut"
+
+#: taxonomy_defaults.module:112
+msgid "Save configuration"
+msgstr "Enregistrer la configuration"
+
+#: taxonomy_defaults.module:113
+#: ;131
+msgid "Reset to defaults"
+msgstr "Rétablir par défaut"
+
+#: taxonomy_defaults.module:117
+msgid "Before you can assign default terms to node types, go to %link to create and fill vocabularies."
+msgstr "Avant de pouvoir atribuer des termes par défaut aux types de noeud, allez %link et créer quelques termes."
+
+#: taxonomy_defaults.module:117
+msgid "add vocabulary"
+msgstr "ajouter une catégorie"
+
+#: taxonomy_defaults.module:138
+msgid "The configuration options have been reset to their default values."
+msgstr "Les options de configuration ont été réinitialisées à leurs valeurs par défaut."
+
+#: taxonomy_defaults.module:149
+msgid "The configuration options have been saved."
+msgstr "Les options de configuration ont été enregistrées."
+
+#: taxonomy_defaults.module:169
+msgid "content type"
+msgstr "type de contenu"
+
+#: taxonomy_defaults.module:169
+msgid "vocabularies and terms"
+msgstr "catégories et termes"
+
+#: taxonomy_defaults.module:0
+msgid "taxonomy_defaults"
+msgstr "taxonomy_defaults"
+

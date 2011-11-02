@@ -1,0 +1,12 @@
+; $Id: ad_remote.info,v 1.1.2.1.2.1 2008/08/11 21:15:27 jeremy Exp $
+name = Remote
+package = Ad
+dependencies[] = ad
+description = Generates cut-and-paste source snippets allowing ads to be easily displayed on remote websites.
+core = 6.x
+; Information added by drupal.org packaging script on 2008-08-12
+version = "6.x-1.x-dev"
+core = "6.x"
+project = "ad"
+datestamp = "1218499216"
+

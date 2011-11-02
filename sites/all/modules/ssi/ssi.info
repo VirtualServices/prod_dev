@@ -1,0 +1,10 @@
+; $Id: ssi.info,v 1.1 2008/07/31 07:08:33 deciphered Exp $
+name = SSI
+description = Allows Drupal content to be accessed externally via SSI
+core = 6.x
+; Information added by drupal.org packaging script on 2008-08-04
+version = "6.x-1.x-dev"
+core = "6.x"
+project = "ssi"
+datestamp = "1217851956"
+

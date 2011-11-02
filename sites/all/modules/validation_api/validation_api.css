@@ -1,0 +1,9 @@
+/* $Id: validation_api.css,v 1.1.2.3 2008/08/08 03:24:26 tapocol Exp $ */
+
+div.add_validator {
+  font-size: 80%;
+}
+
+div.add_validator li {
+  line-height: 125%;
+}

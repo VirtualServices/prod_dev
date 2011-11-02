@@ -1,0 +1,15 @@
+; $Id: question_answer.info,v 1.1 2010/06/25 17:42:14 jcisio Exp $
+name = Question/Answer
+description = Convert one node type into Question/Answer
+dependencies[] = ctools
+dependencies[] = content
+dependencies[] = number
+dependencies[] = content_permissions
+core = 6.x
+
+; Information added by drupal.org packaging script on 2010-11-09
+version = "6.x-1.6"
+core = "6.x"
+project = "question_answer"
+datestamp = "1289302257"
+

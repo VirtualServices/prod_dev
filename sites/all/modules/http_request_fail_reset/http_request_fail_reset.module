@@ -1,0 +1,67 @@
+<?php
+// $Id: http_request_fail_reset.module,v 1.2 2008/11/08 06:03:20 jrglasgow Exp $
+// by James Glasgow (jrglasgow) of Tribute Media - http://www.tributemedia.com
+
+/**
+ * Implementation of hook_cron().
+ */
+function http_request_fail_reset_cron() {
+  // check to see if the check needs to be performed
+  $total_interval = variable_get('http_request_fail_reset_interval', 86400) * variable_get('http_request_fail_reset_interval_multiplier', 1);
+  $now = time();
+  $last_checked = variable_get('http_request_fail_reset_last_checked', 0);
+  if ($now - $last_checked > $total_interval) {
+    $fails = variable_get('drupal_http_request_fails', 0);
+    print '$fails = '. ($fails ? 'TRUE' : 'FALSE') ;
+    // check to see if the last test failed
+    if ($fails) {
+      variable_set('drupal_http_request_fails', 0);
+      watchdog('HRFR', 'HTTP Request Fails Reset: variable "drupal_http_request_fails" reset', array(), WATCHDOG_ALERT);
+    }
+    else {
+      watchdog('HRFR', 'HTTP Request Fails Reset: variable "drupal_http_request_fails" checked, no need to reset.');
+    }
+    variable_set('http_request_fail_reset_last_checked', $now);
+  }
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function http_request_fail_reset_menu() {
+  $items = array();
+  $items['admin/settings/http_request_fail_reset'] = array(
+    'title' => 'HTTP Request Fail Reset',
+    'description' => 'Change interval for resetting drupal_http_request_fails',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_http_request_fail_reset_admin_form'),
+    'access arguments' => array('administer site configuration'),
+  );
+  return $items;
+}
+
+/**
+ * Module settings form
+ */
+function _http_request_fail_reset_admin_form() {
+  $form = array();
+  $form['http_request_fail_reset_interval_multiplier'] = array(
+    '#title' => 'Interval Quantity',
+    '#description' => 'How often do you want the variable "drupal_http_request_fails" reset?',
+    '#type' => 'textfield',
+    '#default_value' => variable_get('http_request_fail_reset_interval_multiplier', 1),
+  );
+  $form['http_request_fail_reset_interval'] = array(
+    '#title' => 'Interval',
+    '#description' => 'What interval?',
+    '#type' => 'select',
+    '#default_value' => variable_get('http_request_fail_reset_interval', 86400),
+    '#options' => array(
+      60 => 'minutes',
+      3600 => 'hours',
+      86400 => 'days',
+      604800 => 'weeks',
+    ),
+  );
+  return system_settings_form($form);
+}

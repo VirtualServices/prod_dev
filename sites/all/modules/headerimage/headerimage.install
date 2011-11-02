@@ -1,0 +1,111 @@
+<?php
+  
+/**
+ * Implementation of hook_schema()
+ */
+function headerimage_schema() {
+  $schema['headerimage'] = array(
+    'description' => t(''),
+    'fields' => array(
+      'nid' => array(
+        'description' => t(''),
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'block' => array(
+        'description' => t(''),
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '0',
+      ),
+      'weight' => array(
+        'description' => t(''),
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'conditions' => array(
+        'description' => t(''),
+        'type' => 'text',
+        'not null' => TRUE, 
+      ),
+    ),
+    'primary key' => array('nid'),
+  );
+  $schema['headerimage_block'] = array(
+    'description' => t(''),
+    'fields' => array(
+      'delta' => array(
+        'description' => t(''),
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'title' => array(
+        'description' => t(''),
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+    ),
+    'primary key' => array('delta'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install
+ */
+function headerimage_install() {
+  if (drupal_install_schema('headerimage')) {
+    drupal_set_message(t('Header Image module installed successfully.'));
+  }
+  else {
+    drupal_set_message(t('The installation of the Header Image module was unsuccessful.'), 'error');
+  }
+}
+
+/**
+ * Implementation of hook_uninstall
+ */
+function headerimage_uninstall() {
+  drupal_uninstall_schema('headerimage');
+  db_query("DELETE FROM {variable} WHERE name LIKE 'headerimage_%%'");
+}
+
+/**
+ * Change weight field to unsigned int.
+ */
+function headerimage_update_6001() {
+  $ret = array();
+  db_change_field($ret, 'headerimage', 'weight', 'weight', array(
+        'description' => t(''),
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+      )
+  );
+  return $ret;
+}
+
+/**
+ * Remove default from field conditions.
+ */
+function headerimage_update_6002() {
+  $ret = array();
+  db_change_field($ret, 'headerimage', 'conditions', 'conditions', array(
+        'description' => t(''),
+        'type' => 'text',
+        'not null' => TRUE, 
+      )
+  );
+  return $ret;
+}
+

@@ -1,0 +1,70 @@
+# $Id: eo.po,v 1.1 2008/06/02 13:08:43 arancaytar Exp $
+#
+# LANGUAGE translation of DHTML Menu
+# Copyright 2008 Arancaytar <arancaytar.ilyaran@gmail.com>
+# Generated from files:
+#  dhtml_menu.admin.inc,v 1.2 2008/05/12 06:40:27 arancaytar
+#  dhtml_menu.module,v 1.25 2008/05/12 06:39:52 arancaytar
+#  dhtml_menu.info,v 1.3 2008/02/14 17:15:57 arancaytar
+#  dhtml_menu.install,v 1.6 2008/05/12 06:39:52 arancaytar
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: dhtml_menu 6.x-2.x\n"
+"POT-Creation-Date: 2008-06-02 04:10-0700\n"
+"PO-Revision-Date: 2008-06-02 14:20+0200\n"
+"Last-Translator: Arancaytar <arancaytar.ilyaran@gmail.com>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: dhtml_menu.admin.inc:17
+msgid "jQuery slide effect"
+msgstr "jQuery sovebla efekto"
+
+#: dhtml_menu.admin.inc:18
+msgid "Menu slides when it opens and closes."
+msgstr "Menuoj glitas kiam gis apertas au fermas."
+
+#: dhtml_menu.admin.inc:23
+msgid "Hide Siblings effect"
+msgstr "Kasi Gefratoj efekto"
+
+#: dhtml_menu.admin.inc:24
+msgid "Close all other menu items when one opens."
+msgstr "Kiam menuo apertas, cioj aliaj menuoj fermas."
+
+#: dhtml_menu.admin.inc:30
+msgid "Duplicated menu items"
+msgstr "Duiti menueroj"
+
+#: dhtml_menu.admin.inc:31
+msgid "You can specify a list of menu items that should be displayed twice: Once as a parent item that expands and collapses the sub-menu and again as its own child item, which points directly to the page (the parent items still links on double-click). Enter one internal path (like \"admin\") on each line. To specify a custom link text, put it after the path, separated by a space."
+msgstr "Vi povas enskribi liston de menueroj kioj vidigitu dufoje: Unue kiel patrero kio ekspansas la submenuon, kaj ree kiel sia idoero kio ligilas al la pago de la menuero. La patrero ankau ligilas al la pago kiam duoble klakita. Enskribu unu internan padon kaj etikedon por lineo (por eksamplo \"admin Administrapanelo\")."
+
+#: dhtml_menu.module:39
+msgid "Use the DHTML effect"
+msgstr "Uzu la DHTML efekton"
+
+#: dhtml_menu.module:17
+msgid "DHTML Menu"
+msgstr "DHTML Menuoj"
+
+#: dhtml_menu.module:18 dhtml_menu.info:0
+msgid "Adds new menus with DHTML to reduce page refreshes"
+msgstr "Aldonas novajn menuojn kun DHTML funkcio por redukti pagorefresojn"
+
+#: dhtml_menu.module:0
+msgid "dhtml_menu"
+msgstr "dhtml_menu"
+
+#: dhtml_menu.install:21
+msgid "All your menu blocks now use DHTML behavior by default. This configuration can be changed in the block settings."
+msgstr "Via ciuj menublokoj nun uzas la DHTML funkcion per defaulto. Tion ci vi povas sango en la bloko administrejo."
+
+#: dhtml_menu.info:0
+msgid "DHTML Menus"
+msgstr "DHTML Menuoj"

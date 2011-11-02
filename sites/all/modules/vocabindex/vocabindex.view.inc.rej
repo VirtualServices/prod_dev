@@ -1,0 +1,48 @@
+***************
+*** 116,121 ****
+  function vocabindex_convert_view($view) {
+    $strings[VOCABINDEX_VIEW_FLAT] = 'flat';
+    $strings[VOCABINDEX_VIEW_TREE] = 'tree';
+    $strings[VOCABINDEX_VIEW_ALPHABETICAL] = 'alphabetical';
+  
+    return $strings[$view];
+--- 116,122 ----
+  function vocabindex_convert_view($view) {
+    $strings[VOCABINDEX_VIEW_FLAT] = 'flat';
+    $strings[VOCABINDEX_VIEW_TREE] = 'tree';
++   $strings[VOCABINDEX_VIEW_STATICTREE] = 'statictree';
+    $strings[VOCABINDEX_VIEW_ALPHABETICAL] = 'alphabetical';
+  
+    return $strings[$view];
+***************
+*** 401,406 ****
+  }
+  
+  /**
+   * Helper function for vocabindex_list_render_tree()
+   *
+   * Walks through the tree and renders each term.
+--- 402,424 ----
+  }
+  
+  /**
++  * Render a static tree
++  *
++  * @param $tree
++  *   Type: array; A taxonomy tree.
++  * @param $children
++  *   Type: array; The vocabindex_get_children() output for this particular tree.
++  * @param $vi
++  *   Type: object; The VI this list belongs to.
++  *
++  * @return
++  *   Type: string; The fully rendered list.
++  */
++ function vocabindex_list_render_statictree($tree, $children, $vi) {
++   return vocabindex_list_render_tree($tree, $children, $vi);
++ }
++ 
++ /**
+   * Helper function for vocabindex_list_render_tree()
+   *
+   * Walks through the tree and renders each term.

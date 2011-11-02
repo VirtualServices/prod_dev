@@ -1,0 +1,50 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Install and uninstall schema and functions for the admin_links module.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function admin_links_uninstall() {
+  variable_del('admin_links_exclude');
+  variable_del('admin_links_universaledit');
+  variable_del('admin_links_link_new');
+}
+
+/**
+ * Move admin_links_edit and admin_links_delete into admin_links_exclude_links.
+ */
+function admin_links_update_6100() {
+  $excludes = array('view', 'devel/*');
+  if (variable_get('admin_links_edit', 1)) {
+    $excludes[] = 'edit';
+  }
+  if (variable_get('admin_links_delete', 0)) {
+    $excludes[] = 'delete';
+  }
+  sort($excludes);
+  variable_set('admin_links_exclude_links', implode("\n", $excludes));
+  variable_del('admin_links_edit');
+  variable_del('admin_links_delete');
+  return array();
+}
+
+/**
+ * Cleanup the admin_links_exclude_links variable.
+ */
+function admin_links_update_6101() {
+  $excludes = preg_split('/[\r\n]+/', variable_get('admin_links_exclude_links', "devel/*\nview"), 0, PREG_SPLIT_NO_EMPTY);
+  foreach ($excludes as $index => $exclude) {
+    if (strpos('node/*/', $exclude) === FALSE) {
+      $excludes[$index] = 'node/*/' . $exclude;
+    }
+  }
+  sort($excludes);
+  variable_set('admin_links_exclude', implode("\n", $excludes));
+  variable_del('admin_links_exclude_links');
+  return array();
+}

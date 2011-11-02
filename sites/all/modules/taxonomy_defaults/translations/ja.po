@@ -1,0 +1,89 @@
+# $Id: ja.po,v 1.1.2.1 2008/04/14 14:18:48 imagine Exp $
+#
+# Japanese translation of Drupal (taxonomy_defaults)
+# Copyright 2008 0829 <hixarg+0829@gmail.com>
+# Generated from files:
+#  taxonomy_defaults.admin.inc,v 1.1.2.2 2008/02/24 11:16:28 heine Exp
+#  taxonomy_defaults.info,v 1.1.4.1 2008/02/24 11:03:49 heine Exp
+#  taxonomy_defaults.module,v 1.11.2.3.2.3 2008/03/06 20:19:25 heine Exp
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Drupal 6.x\n"
+"POT-Creation-Date: 2008-04-13 22:33+0900\n"
+"PO-Revision-Date: 2008-04-14 21:58+0900\n"
+"Last-Translator: 0829 <hixarg+0829@gmail.com>\n"
+"Language-Team: DRUPAL*DRUPAL <hixarg+0829@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: modules/taxonomy_defaults/taxonomy_defaults.admin.inc:18
+msgid "active"
+msgstr "アクティブ"
+
+#: modules/taxonomy_defaults/taxonomy_defaults.admin.inc:18
+msgid "not active"
+msgstr "非アクティブ"
+
+#: modules/taxonomy_defaults/taxonomy_defaults.admin.inc:25
+msgid "Save configuration"
+msgstr "設定の保存"
+
+#: modules/taxonomy_defaults/taxonomy_defaults.admin.inc:26;44
+msgid "Reset to defaults"
+msgstr "デフォルトに戻す"
+
+#: modules/taxonomy_defaults/taxonomy_defaults.admin.inc:30
+msgid "Before you can assign default terms to node types, go to !link to create and fill vocabularies."
+msgstr "コンテンツタイプにデフォルトカテゴリを割り当てる前に、!link ページでボキャブラリを追加する必要があります。"
+
+#: modules/taxonomy_defaults/taxonomy_defaults.admin.inc:30
+msgid "add vocabulary"
+msgstr "ボキャブラリの追加"
+
+#: modules/taxonomy_defaults/taxonomy_defaults.admin.inc:51
+msgid "The configuration options have been reset to their default values."
+msgstr "設定オプションがデフォルトの値に戻されました。"
+
+#: modules/taxonomy_defaults/taxonomy_defaults.admin.inc:62
+msgid "The configuration options have been saved."
+msgstr "設定オプションが保存されました。"
+
+#: modules/taxonomy_defaults/taxonomy_defaults.admin.inc:83
+msgid "content type"
+msgstr "コンテンツタイプ"
+
+#: modules/taxonomy_defaults/taxonomy_defaults.admin.inc:83
+msgid "vocabularies and terms"
+msgstr "ボキャブラリとターム"
+
+#: modules/taxonomy_defaults/taxonomy_defaults.info:0
+msgid "Taxonomy Defaults"
+msgstr "タクソノミーデフォルト"
+
+#: modules/taxonomy_defaults/taxonomy_defaults.info:0
+msgid "Assign default taxonomy terms per node-type."
+msgstr "コンテンツタイプごとにデフォルトのタームを割り当てます。"
+
+#: modules/taxonomy_defaults/taxonomy_defaults.module:18
+msgid "Below you may select default terms for each content type. Check the 'active' box next to the vocabulary, then select the terms."
+msgstr "以下で各コンテンツタイプに割り当てるデフォルトタームを選択できます。 'アクティブ' のチェックボックスを ON にして該当するボキャブラリを選択した後、デフォルトとするタームを選択してください。"
+
+#: modules/taxonomy_defaults/taxonomy_defaults.module:19
+msgid "If <strong>not active</strong>, this vocabulary is not enabled for this content type (on the <a href=\"@url\">categories page</a>). The terms will be added to the content without appearing on the add and edit pages."
+msgstr "<a href=\"@url\">カテゴリのリスト</a> ページでコンテンツタイプに関連付けられていないボキャブラリは <strong>'非アクティブ'</strong> となっています。 <strong>'非アクティブ'</strong> なボキャブラリのタームを選択した場合、コンテンツの追加や編集ページには表示されませんが、そのコンテンツのタームとしては追加されます。"
+
+#: modules/taxonomy_defaults/taxonomy_defaults.module:20
+msgid "If <strong>active</strong>, these taxonomy terms will simply be pre-selected on the submission page for this content type."
+msgstr "<strong>'アクティブ'</strong> なボキャブラリのタームを選択した場合は、単に、コンテンツの追加や編集ページでそのタームがあらかじめ選択された状態になるというだけです。"
+
+#: modules/taxonomy_defaults/taxonomy_defaults.module:33
+msgid "Default terms"
+msgstr "デフォルトターム"
+
+#: modules/taxonomy_defaults/taxonomy_defaults.module:0
+msgid "taxonomy_defaults"
+msgstr "タクソノミーデフォルト"
+

@@ -1,0 +1,12 @@
+; $Id: ad_embed.info,v 1.1.2.1.2.1 2008/08/11 21:15:26 jeremy Exp $
+name = Embed
+package = Ad
+dependencies[] = ad
+description = Embed ads in content.
+core = 6.x
+; Information added by drupal.org packaging script on 2008-08-12
+version = "6.x-1.x-dev"
+core = "6.x"
+project = "ad"
+datestamp = "1218499216"
+

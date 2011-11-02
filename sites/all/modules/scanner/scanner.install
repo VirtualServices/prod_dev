@@ -1,0 +1,80 @@
+<?php
+// $Id: scanner.install,v 1.1.4.1 2009/02/23 18:22:16 aasarava Exp $
+
+/**
+ * @file
+ * Search and Replace Scanner install - creates necessary tables.
+ */
+
+
+/**
+ * Implementation of hook_schema().
+ */
+function scanner_schema() {
+  $schema['scanner'] = array(
+    'description' => t('Holds info on recent replacements in case undo is needed.'),
+    'fields' => array(
+      'undo_id' => array(
+        'description' => t('Row identifier'),
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'undo_data' => array(
+        'description' => t('What was changed'),
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => TRUE,
+      ),
+      'undone' => array(
+        'description' => t('Whether the replacement has been undone'),
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+      ),
+      'searched' => array(
+        'description' => t('Text that was searched for'),
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+      ),
+      'replaced' => array(
+        'description' => t('Text that was used as replacement'),
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+      ),
+      'count' => array(
+        'description' => t('How many fields were modified on replacement'),
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'time' => array(
+        'description' => t('How long the replacement took'),
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('undo_id'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function scanner_install() {
+  // Create tables.
+  drupal_install_schema('scanner');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function scanner_uninstall() {
+  // Remove tables.
+  drupal_uninstall_schema('scanner');
+
+  db_query("DELETE FROM {variable} WHERE name LIKE 'scanner_%'");
+}
+

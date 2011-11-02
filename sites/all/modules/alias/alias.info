@@ -1,0 +1,11 @@
+; $Id: alias.info,v 1.1 2008/11/24 22:45:31 rz Exp $
+name = Alias
+description = Create URL aliases for external URLs.  
+core = 6.x
+
+; Information added by drupal.org packaging script on 2008-11-24
+version = "6.x-1.0"
+core = "6.x"
+project = "alias"
+datestamp = "1227567305"
+

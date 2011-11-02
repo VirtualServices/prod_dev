@@ -1,0 +1,52 @@
+<?php
+// $Id$
+/**
+ * Install the biography module, including it's content (node)
+ * type.
+ * @file
+ */
+/**
+ * Implementation of hook_install().
+ */
+function childbook_install() {
+  drupal_install_schema('childbook');
+}
+/**
+ * Implementation of hook_uninstall().
+ */
+function childbook_uninstall() {
+  drupal_uninstall_schema('childbook');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function childbook_schema() {
+  $schema['childbook'] = array(
+    'fields' => array(
+      'vid' => array(
+        'type' => 'int', 
+        'unsigned' => TRUE, 
+        'not null' => TRUE, 
+        'default' => 0,
+      ),
+      'nid' => array(
+        'type' => 'int', 
+        'unsigned' => TRUE, 
+        'not null' => TRUE, 
+        'default' => 0,
+      ),
+      // Note: On MySQL, text fields cannot have default values.
+      'catalog' => array('type' =>'varchar', 'length'=>128, 'not null'=>TRUE, 'default'=>1),
+      'elements' => array('type' =>'varchar', 'length' => 128, 'not null' => TRUE, 'default' => 'image'),
+      'position' => array('type' =>'varchar', 'length' => 256, 'not null' => TRUE, 'default' => 'Image with link'),
+      'mtype' => array('type' => 'varchar', 'length' => 256, 'not null' => TRUE, 'default' => 'book')
+    ),
+    'indexes' => array(
+      'nid' => array('nid'),
+    ),
+    // Version is primary key. Could do nid, vid.
+    'primary key' => array('vid'), 
+  );
+  return $schema;
+}

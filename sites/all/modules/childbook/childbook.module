@@ -1,0 +1,225 @@
+<?php
+
+//$ID$
+/**
+ * Provides the childbook content type.
+ * @file
+ */
+
+
+/**
+ * Implementation of hook_help().
+ */
+function childbook_help($path, $arg) {
+  
+  if ($path == 'admin/help#childbook') {
+    $txt = 'Just input a catalog number and let the module do the rest.';
+     $replace = array();
+    return '<p>'. t($txt, $replace) .'</p>';
+  }
+}
+
+/**
+ * Implementation of hook_node_info
+ */
+function childbook_node_info(){
+ return array(
+    'childbook' => array(
+      'name' => t('childbook page'),
+      'module' => 'childbook',
+      'description' => t('A childbook page'),
+      'has_title' => TRUE,
+      'has_body' => TRUE,
+    )
+  );	
+}
+
+/**
+ * Implementation of hook_form().
+ */
+function childbook_form(&$node) {
+	$ar=array(); $ar[1]='image'; $ar[2]='summary'; $ar[3]='title';
+	$ar2=array(); $ar2[1]='books'; $ar2[2]='digital media';$ar2[3]='magazine';
+	$ar3=array(); $ar3[1]='Image with link'; $ar3[2]="Title and Image(summary as image title)"; $ar3[3]="Title, image and summary"; $ar3[4]='Image above and title';
+  $type = node_get_types('type', $node);
+  if ($type->has_title) {
+    $form['title'] = array(
+      '#type' => 'textfield',
+      '#title' => check_plain($type->title_label),
+      '#required' => TRUE,
+      '#default_value' => $node->title,
+      '#weight' => -5,
+    );
+  }
+  if ($type->has_body) {
+    $form['body_field'] = node_body_field(
+      $node, 
+      $type->body_label, 
+      $type->min_word_count
+    );
+  }
+  // Our custom fields: Dates, Life, Works.
+// (See FAPI docs for specification)
+	$form['childbook'] = array(
+		'#type' => 'fieldset',
+		'#title' => 'childbook',
+    '#collapsible' => TRUE, 
+    '#collapsed' => FALSE,
+    '#weight' => -4,
+	);
+
+	$form['childbook']['mtype'] = array(
+		'#type' => 'select',
+		'#title' => t('Media type'),
+		'#description' => t('Selecte the appropiate media type'),
+		'#options'=>$ar2	
+	);
+  if(isset($node->catalog)){$catalog=explode('@',$node->catalog);}
+  $form['childbook']['catalog'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Catalog number'),
+    '#description' => t('The catalog number. Use it for books, magazines and to get a title for the media type.'),
+    '#default_value' => isset($node->catalog) ? $catalog[0] : '',
+  );
+
+  $form['childbook']['asin'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Asin number'),
+    '#description' => t('The asin number. Use it only for media type to get a proper image.'),
+    '#default_value' => isset($node->catalog) ? $catalog[1] : '',
+  );
+
+  $form['childbook']['elements'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Elements'),
+    '#description' => t('Select the elements you want to display. Example: title and image'),
+    '#options' => $ar,
+  );
+  $form['childbook']['position'] = array(
+  	'#type' => 'select',
+  	'#title' => t('Display'),
+  	'#description' => t('Choose the way you want to display the elements'),
+  	'#options' => $ar3
+  );
+  
+  return $form;
+}
+
+/**
+ * Implements hook_perm()
+ */
+function childbook_perm() {
+  return array(
+    'create childbook node',
+    'edit childbook nodes',
+    'delete childbook nodes',
+  );
+}
+
+/** 
+ * Implements hook_access()
+ */
+function childbook_access($op, $node, $account) {
+  switch ($op) {
+    case 'create':
+      return user_access('create childbook node', $account);
+    case 'update':
+      return user_access('edit childbook nodes', $account);
+    case 'delete':
+      return user_access('delete childbook nodes', $account);
+  }
+}
+
+function childbook_insert($node) {
+  $a=serialize($node->elements);
+  if($node->asin) {$node->catalog=$node->catalog.'@'.$node->asin; }
+  db_query(
+    'INSERT INTO {childbook} (vid, nid, mtype, catalog, elements, position) '
+      ."VALUES (%d, %d, '%s', '%s', '%s','%s')", 
+    $node->vid, 
+    $node->nid, 
+    $node->mtype, 
+    $node->catalog,
+    $a,
+    $node->position
+  );
+}
+
+/**
+ * Implements hook_delete().
+ */
+function childbook_delete($node) {
+  db_query(
+    'DELETE FROM {childbook} WHERE nid = %d', 
+    $node->nid
+  );
+}
+
+/**
+ * Implements hook_update().
+ */
+function childbook_update($node) {
+  if ($node->revision) {
+    childbook_insert($node);
+  } 
+  else {
+  	if($node->asin) {$node->catalog=$node->catalog.'@'.$node->asin; }
+    db_query("UPDATE {childbook} "
+        ."SET mtype = '%s', catalog = '%s', elements='%s', position='%s' "
+        ."WHERE vid = %d", 
+      $node->mtype, 
+      $node->catalog,
+    	serialize($node->elements),
+    	$node->position,
+      $node->vid
+    );
+  }
+}
+
+/**
+ * Implementation of hook_load().
+ */
+function childbook_load($node) {
+  $result = db_query(
+    'SELECT mtype, catalog, elements, position FROM {childbook} WHERE vid = %d',
+    $node->vid
+  );
+  return db_fetch_object($result);
+}
+
+/**
+ * Implementation of hook_view().
+ */
+function childbook_view($node, $teaser = FALSE, $page = FALSE) {
+  $node = node_prepare($node, $teaser); // get it ready for display
+  
+  $catalog = $node->catalog;
+  $elements = $node->elements;
+  $position = $node->position;
+  $mtype= $node->mtype;
+  
+  // Add theme stuff here
+  $node->content['childbook_info'] = array(
+    '#value' => theme('childbook_info', $catalog, $elements, $position, $mtype),
+    '#weight' => -3,
+  );
+  
+  return $node;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function childbook_theme() {
+  return array(
+    'childbook_info' => array(
+      'template' => 'childbook_info',
+      'arguments' => array(
+        'catalog' => NULL,
+        'elements' => NULL,
+        'position' => NULL,
+        'mtype' => NULL
+      ),
+    ),
+  );
+}

@@ -1,0 +1,65 @@
+body { 
+text-align:center; /* for IE */ 
+color:#fff;
+font-family: verdana;
+font-size: 10px;
+} 
+
+a:link {color: #fff; text-decoration: underline;}
+a:visited {color: #FFF; text-decoration: underline;}
+a:hover {color: #6c2c8e; text-decoration: underline;}
+
+#wrapper { 
+text-align:left; /* reset text alignment */ 
+width:735px; /* or a percentage, or whatever */ 
+margin:0 auto; /* for the rest */ 
+}
+
+h3 {margin-bottom:0px;}
+.fpmenu {background:#6b2c8f; color:#FFFFFF;}
+.sf-menu{ 
+color:#fff;
+font-family: verdana;
+font-size: 12px;
+font-weight: bold;
+text-decoration: none;
+} 
+
+
+
+ul.fpmenuitem,ul.fpmenuitem li {list-style-image:url(http://www.myrcpl.com/sites/all/themes/RCPL2/images/a1.gif); padding-bottom:5px}
+ul.fpmenuitem li a,ul.fpmenuitem li a:visited {color:#fff; text-decoration:none; font:bold 11px Verdana;}
+
+
+.newstable{background:#ba8abb;}
+.headlines {color:#FFFFFF; height:361px; padding:10px; }
+
+.frontpagenews {font-family:Verdana; font-size:14px; background:#ba8abb;}
+.frontpagenews img{margin-right: 10px; margin-bottom: 5px; border-color:#fff}
+.frontpagenews p{margin-bottom: 20px;}
+.greenbutton {background:#89b93a}
+
+.login {background:#6b2c8f url(sites/all/themes/RCPL2/home/images/enews.gif) no-repeat; color:#FFFFFF; width:180px; height:120px; font:12px verdana;}
+.login ul,.login ul li {list-style-image:url(http://www.myrcpl.com/sites/all/themes/RCPL2/images/a1.gif)}
+.login li a,.login li a:visited {color:#fff; text-decoration:none; font:bold 11px Verdana;}
+.login li a:hover { text-decoration:underline;}
+.login ul {margin:0px; padding:15px 0 0 40px;}
+
+.featurebar {}
+
+.new {background-color:#6C2C8E; color:#FFFFFF; width:300px; } 
+.accent {width:130px; padding: 0px 0px 0px 10px;}
+
+/* footer */
+.owa { color:#5c2579; font-size:13px; padding:16px 0px 19px 45px; text-align:right;}
+.owa a {text-decoration:none; color:#5c2579}
+.owa a:hover{text-decoration:none; color:#2f133e }
+.owa a:active{text-decoration:none; color:#2f133e }
+.owa a:visited{text-decoration:none; color:#5c2579 }
+
+/* white How Do I box */
+.howdoi {color:#5c2579; font-size:13px;}
+.howdoi li {margin-left:-5px}
+
+/* footer end */
+

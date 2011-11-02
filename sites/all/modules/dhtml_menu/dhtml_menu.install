@@ -1,0 +1,73 @@
+<?php
+// $Id: dhtml_menu.install,v 1.7.2.1 2008/07/07 18:48:53 arancaytar Exp $
+
+/**
+ * @file dhtml_menu.install
+ * Install and Uninstall processes for this module.
+ */
+
+/**
+ * Implementation of hook_enable().
+ */
+function dhtml_menu_enable() {
+  // If DHTML hasn't been configured yet, set the default values.
+  if (!$dhtml = variable_get('dhtml_menu_menus', array())) {
+    $dhtml['user'][1] = 1;
+    $menus = array_keys(module_invoke('menu', 'block', 'list'));
+    foreach ($menus as $delta) $dhtml['menu'][$delta] = 1;
+    variable_set('dhtml_menu_menus', $dhtml);
+    
+    // Notify about added DHTML behavior
+    drupal_set_message(t('All your menu blocks now use DHTML behavior by default. This configuration can be changed in the <a href="@url">block settings</a>.', array('@url' => url('admin/build/block'))));
+  }
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function dhtml_menu_uninstall() {
+  // Delete all global variables
+  variable_del('dhtml_menu_duplicated');
+  variable_del('dhtml_menu_use_effects');
+  variable_del('dhtml_menu_hide_siblings');
+  variable_del('dhtml_menu_menus');
+}
+
+/**
+ * #6000: 
+ *  - Replace outdated DHTML blocks with normal menu blocks, enable DHTML for these blocks.
+ *  - Fix a typo in one of the variable names.    
+ */
+function dhtml_menu_update_6000() {
+  if ($old_variable = variable_get('dhtml_menus_menus', FALSE)) {
+    variable_set('dhtml_menu_menus', $old_variable);
+    variable_del('dhtml_menus_menus');
+  }
+  
+  $dhtml_menu_menus = variable_get('dhtml_menu_menus', array());
+  
+  $result = db_query("SELECT delta, region, weight, theme FROM {blocks} WHERE module = 'dhtml_menu' AND status = 1");
+  while ($row = db_fetch_array($result)) {
+    $dhtml_menu_menus[$row['delta']] = 1;
+    $module = $row['delta'] == 'navigation' ? 'user' : 'menu';
+    if ($row['delta'] == 'navigation') $row['delta'] = 1;
+    
+    $ret[] = update_sql("UPDATE {blocks} SET status = 1, region = '$row[region]', weight = '$row[weight]' WHERE module = '$module' AND delta = '$row[delta]' AND theme = '$row[theme]'");
+  }
+  $ret[] = update_sql("DELETE FROM {blocks} WHERE module = 'dhtml_menu'");
+
+  drupal_set_message(t('DHTML Menu no longer provides its own blocks. If your navigation menu appears to be missing, you will need to re-enable it manually in the <a href="@url">block administration</a>', array('@url' => url('admin/build/block'))), 'warning');
+  
+  variable_set('dhtml_menu_menus', $dhtml_menu_menus);
+  return $ret;
+}
+
+function dhtml_menu_update_6001() {
+  $dhtml = variable_get('dhtml_menu_menus', array());
+  
+  $new['user'][1] = $dhtml['navigation'];
+  unset($dhtml['navigation']);
+  $new['menu'] = $dhtml;
+
+  variable_set('dhtml_menu_menus', $new);
+}

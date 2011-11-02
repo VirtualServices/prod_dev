@@ -1,0 +1,47 @@
+.directory-home-vocabulary { }
+.directory-child-vocabulary {  }
+.directory-resources { }
+.directory-sub-categories { }
+.directory-category {  }
+.directory-toolbar {  }
+.directory-filter-wrapper {  }
+
+/* "View all" text and link div */
+div.directory-all-resources { margin-left: 2em; }
+div.directory-all-resources span.directory-term-name { font-style:italic; }
+div.directory-all-resources span.directory-limit { font-style: italic; }
+div.directory-all-resources a { font-weight:bold; }
+
+.directory-help, .directory-term-help { border: solid 1px #eee; padding: 1em; }
+
+/* control appearance of taxonomy terms in top-level views */
+span.directory-category-haschildren { font-weight:bold; } /* has 1 or more child nodes */
+span.directory-category-nochildren {  } /* has no child nodes */
+span.directory-nodecount { font-style:italic; font-size: .9em; color: #555; } /* what to do with (nnn) span after term? */
+
+table.directory-resources ul li { display: block; list-style:none; }
+table.directory-resources { width: 98%; }
+table.directory-resources { margin-top: 1em; margin-bottom: .25em; }
+table.directory-resources tr td { width: 50%; } /* make columns evenly spaced */
+
+/* Controls the javascript collapsible vocabs on the main page */
+div.directory-home-vocabulary-collapsible {
+  margin-top: 1em;
+}
+
+div.directory-home-vocabulary-collapsible h3{
+  display: inline;
+}
+
+.directory-home-toggle-link {
+  text-decoration: underline;
+  color: blue;
+  padding-left: 3em;
+  font-size: 80%;
+}
+
+.directory-home-toggle-link:hover {
+  cursor:pointer;
+  color: red;
+}
+

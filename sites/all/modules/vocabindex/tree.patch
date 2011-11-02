@@ -1,0 +1,77 @@
+diff -uNr vocabindex/theme/vocabindex_link.tpl.php vocabindex.new/theme/vocabindex_link.tpl.php
+--- vocabindex/theme/vocabindex_link.tpl.php	2009-09-15 16:02:41.000000000 +0100
++++ vocabindex.new/theme/vocabindex_link.tpl.php	2009-09-15 16:08:35.000000000 +0100
+@@ -16,7 +16,7 @@
+ $term->name .= $vi->node_count ? ' <span dir="' . $dir . '">(' . $term->node_count . ')</span>' : NULL;
+ // Tree views show term descriptions as link titles (tooltips), while other
+ // views show them directly under the term names.
+-if ($vi->view != VOCABINDEX_VIEW_TREE && $term->description) {
++if ( ( ($vi->view != VOCABINDEX_VIEW_TREE) && ($vi->view != VOCABINDEX_VIEW_STATICTREE) ) && $term->description) {
+   $term->name .= '<span class="description">' . $term->description . '</span>';
+   $title = NULL;
+ }
+diff -uNr vocabindex/vocabindex.admin.inc vocabindex.new/vocabindex.admin.inc
+--- vocabindex/vocabindex.admin.inc	2009-09-15 16:02:41.000000000 +0100
++++ vocabindex.new/vocabindex.admin.inc	2009-09-15 16:07:53.000000000 +0100
+@@ -211,10 +211,12 @@
+     $default_value = !is_null($vi->view) ? $vi->view : VOCABINDEX_VIEW_TREE;
+     $options = array(VOCABINDEX_VIEW_TREE => t('Tree'));
+     if ($vi->type == VOCABINDEX_VI_PAGE) {
++      $options[VOCABINDEX_VIEW_STATICTREE] = t('Static Tree');
+       $options[VOCABINDEX_VIEW_FLAT] = t('Browsable');
+       $options[VOCABINDEX_VIEW_ALPHABETICAL] = t('Alphabetical');
+     }
+     else {
++      $options[VOCABINDEX_VIEW_STATICTREE] = t('Static Tree');
+       $options[VOCABINDEX_VIEW_FLAT] = t('Flat');
+     }
+     $form[$id . 'view'] = array(
+diff -uNr vocabindex/vocabindex.module vocabindex.new/vocabindex.module
+--- vocabindex/vocabindex.module	2009-09-15 16:02:41.000000000 +0100
++++ vocabindex.new/vocabindex.module	2009-09-15 16:05:54.000000000 +0100
+@@ -38,6 +38,10 @@
+  */
+ define('VOCABINDEX_VIEW_ALPHABETICAL', 3);
+ /**
++ * Static Tree view.
++ */
++define('VOCABINDEX_VIEW_STATICTREE', 4);
++/**
+  * A VI block.
+  */
+ define('VOCABINDEX_VI_BLOCK', 1);
+diff -uNr vocabindex/vocabindex.view.inc vocabindex.new/vocabindex.view.inc
+--- vocabindex/vocabindex.view.inc	2009-09-15 16:02:41.000000000 +0100
++++ vocabindex.new/vocabindex.view.inc	2009-09-15 16:10:11.000000000 +0100
+@@ -116,6 +116,7 @@
+ function vocabindex_convert_view($view) {
+   $strings[VOCABINDEX_VIEW_FLAT] = 'flat';
+   $strings[VOCABINDEX_VIEW_TREE] = 'tree';
++  $strings[VOCABINDEX_VIEW_STATICTREE] = 'statictree';
+   $strings[VOCABINDEX_VIEW_ALPHABETICAL] = 'alphabetical';
+ 
+   return $strings[$view];
+@@ -401,6 +402,23 @@
+ }
+ 
+ /**
++ * Render a static tree
++ *
++ * @param $tree
++ *   Type: array; A taxonomy tree.
++ * @param $children
++ *   Type: array; The vocabindex_get_children() output for this particular tree.
++ * @param $vi
++ *   Type: object; The VI this list belongs to.
++ *
++ * @return
++ *   Type: string; The fully rendered list.
++ */
++function vocabindex_list_render_statictree($tree, $children, $vi) {
++  return vocabindex_list_render_tree($tree, $children, $vi);
++}
++
++/**
+  * Helper function for vocabindex_list_render_tree()
+  *
+  * Walks through the tree and renders each term.

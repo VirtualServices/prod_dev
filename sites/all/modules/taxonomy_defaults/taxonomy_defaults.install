@@ -1,0 +1,130 @@
+<?php
+// $Id: taxonomy_defaults.install,v 1.3.2.1 2010/11/22 10:24:04 sleepcamel Exp $
+
+/**
+ * @file
+ * Install, update and uninstall functions for the taxonomy_defaults module.
+ */
+
+
+/**
+ * Hook sets taxonomy_defaults 'weight' so that it runs after taxonomy
+ *
+ */
+function taxonomy_defaults_install() {
+  $ret = array();
+
+  $weight = 0;
+  $query = "SELECT weight FROM {system} WHERE type = 'module' AND status = 1 and name = 'taxonomy'";
+  $result = db_query($query);
+
+  if ( $row = db_fetch_object($result) ) {
+    $weight = $row->weight;
+  }
+
+  $weight = $weight + 1;
+
+  $ret[] = db_query("UPDATE {system} SET weight = ". $weight ." WHERE name = 'taxonomy_defaults'");
+
+  return $ret;
+}
+
+/**
+ * Implementation of hook_uninstall().
+ *
+ */
+function taxonomy_defaults_uninstall() {
+  db_query("DELETE FROM {variable} WHERE name LIKE 'taxdef_%'");
+}
+
+/**
+ * Implementation of hook_requirements().
+ *
+ */
+function taxonomy_defaults_requirements($phase) {
+  $requirements = array();
+  $tax_weight = 0;
+  $weight = 0;
+
+  $query = "SELECT weight FROM {system} WHERE type = 'module' AND status = 1 and name = 'taxonomy'";
+  $result = db_query($query);
+  if ( $row = db_fetch_object($result) ) {
+    $tax_weight = $row->weight;
+  }
+
+  $query = "SELECT weight FROM {system} WHERE type = 'module' AND status = 1 and name = 'taxonomy_defaults'";
+  $result = db_query($query);
+  if ( $row = db_fetch_object($result) ) {
+    $weight = $row->weight;
+
+    if ( $tax_weight >= $weight ) {
+      $requirements['taxdef'] = array(
+        'title' => t('Taxonomy Defaults'),
+        'value' => t('Invalid Module Weight'),
+        'severity' => REQUIREMENT_ERROR,
+        'description' => t("The Taxonomy Defaults module's weight is lower than the Taxonomy module's, so taxonomy default settings will be ignored. !link to learn more about module weights, or reinstall the Taxonomy Defaults module.", array('!link' => l('Go here', 'http://drupal.org/node/110238'))),
+      );
+    }
+  }
+
+  return $requirements;
+}
+
+/**
+ * Update taxonomy defaults weighting.
+ * Previous versions of taxonomy defaults had to run BEFORE taxonomy, but now it must run AFTER taxonomy
+ */
+function taxonomy_defaults_update_6101() {
+  $ret = array();
+  $weight = 0;
+
+  $query = "SELECT weight FROM {system} WHERE type = 'module' AND status = 1 and name = 'taxonomy'";
+  $result = db_query($query);
+  if ( $row = db_fetch_object($result) ) {
+    $weight = $row->weight;
+  }
+
+  $weight = $weight + 1;
+
+  db_query("UPDATE {system} SET weight = ". $weight ." WHERE name = 'taxonomy_defaults'");
+  return $ret;
+}
+
+/**
+ * Update taxonomy defaults settings.
+ *
+ * Delete orphaned settings due to deleted vocabularies & content types, as well as deprecated settings,
+ * and initialize the new "visible" setting
+ */
+function taxonomy_defaults_update_6102() {
+  $ret = array();
+  $valid_settings = array();
+
+  //loop through every combo of content types and vocabularies
+  foreach (node_get_types() as $type => $name) {
+    foreach (taxonomy_get_vocabularies() as $vid => $vocab) {
+      // only store settings for vocabs previously marked active for this content type
+      if ( variable_get("taxdef_{$type}_{$vid}_active", FALSE ) ) {
+        $valid_settings["taxdef_{$type}_{$vid}"] = variable_get("taxdef_{$type}_{$vid}", array());
+
+        if (!array_key_exists($vid, taxonomy_get_vocabularies($type) ) ) {
+          // this appears to be a "hidden" vocabulary, so turn off visibility
+          $valid_settings["taxdef_{$type}_{$vid}_visible"] = FALSE;
+        }
+        else {
+          // otherwise, leave visibility on
+          $valid_settings["taxdef_{$type}_{$vid}_visible"] = TRUE;
+        }
+      }
+    }
+  }
+
+  // delete ALL taxonomy default settings
+  db_query("DELETE FROM {variable} WHERE name LIKE 'taxdef_%'");
+
+  foreach ($valid_settings as $setting => $value ) {
+    variable_set($setting, $value);
+  }
+
+  return $ret;
+}

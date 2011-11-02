@@ -1,0 +1,11 @@
+; $Id: validation_api.info,v 1.1.2.2 2008/08/08 19:23:38 tapocol Exp $
+name = Validation API
+description = Allows admins to create validation rules on any form field with a UI.
+package = Validation API
+core = 6.x
+; Information added by drupal.org packaging script on 2008-12-23
+version = "6.x-1.0"
+core = "6.x"
+project = "validation_api"
+datestamp = "1229991335"
+

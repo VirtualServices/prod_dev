@@ -1,0 +1,59 @@
+# $Id: es.po,v 1.1.2.1 2008/07/05 10:46:45 gidema Exp $
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  blocktheme.module,v 1.1.2.2.2.1 2008/07/03 14:44:01 gidema
+#  blocktheme.info: n/a
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: blocktheme\n"
+"POT-Creation-Date: 2008-07-03 17:51-0300\n"
+"PO-Revision-Date: 2008-07-03 17:56-0300\n"
+"Last-Translator: Sandro Franchi <sandro.franchi@gmail.com>\n"
+"Language-Team: Sandro Franchi <sandro.franchi@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Spanish\n"
+"X-Poedit-Country: ARGENTINA\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: blocktheme.module:6
+#: blocktheme.info:0
+msgid "Block Theme"
+msgstr "Block Theme"
+
+#: blocktheme.module:7;31
+msgid "Allows the admin to define re-usable block templates that can be configured from block config screen"
+msgstr "Permite al administrador definir plantillas de bloques reusables, las cuales pueden ser configuradas desde la pantalla de configuación de bloques"
+
+#: blocktheme.module:21
+msgid "Custom Block Templates"
+msgstr "Plantillas personalizadas de bloques"
+
+#: blocktheme.module:22
+msgid "Enter in the form: <em>customtemplate|Friendly Name</em> Where customtemplate corresponds to a tpl file called blocktheme-customtemplate.tpl.php as well as to the value of an extra variable <em>$blocktheme</em> in the block templates"
+msgstr "Especifique con el formato: <em>nombreplantilla|Nombre Amigable</em> Donde nombreplantilla corresponde al archivo .tpl llamado blocktheme-nombreplantilla.tpl.php, como así también el valor de la variable adicional <em>$blocktheme</em> disponible dentro de la plantilla del block en cuestión"
+
+#: blocktheme.module:34
+msgid "BlockTheme allows an admin to define tpl files for standard block templates and provides a select box on the block configure form so the user can select a tpl file to use as opposed to having to override the templates by block ID."
+msgstr "BlockTheme permite al administrador definir archivos .tpl para los bloques standard y provee una lista de selección en el formulario de configuración de cada bloque para seleccionar fácilmente la plantilla a utilizar, evitando tener que utilizar plantillas refiriéndose al ID del bloque en cuestión."
+
+#: blocktheme.module:46;71
+msgid "<-- None -->"
+msgstr "<-- Ninguno -->"
+
+#: blocktheme.module:58;83
+msgid "Custom Theme"
+msgstr "Tema personalizado"
+
+#: blocktheme.module:0
+msgid "blocktheme"
+msgstr "blocktheme"
+
+#: blocktheme.info:0
+msgid "Provides a configuration option to select custom themes for blocks"
+msgstr "Provee una opción de configuración mediante la cual seleccionar temas personalizados para los bloques"
+

@@ -1,0 +1,174 @@
+<?php
+// $Id: admin_links.module,v 1.1.2.15 2009/09/01 01:40:48 davereid Exp $
+
+/**
+ * @file
+ * Adds edit and delete links to node lists, and adds support for the
+ * Universal Edit Button.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function admin_links_menu() {
+  $items['admin/settings/admin-links'] = array(
+    'title' => 'Admin links',
+    'description' => 'Settings for administration links in node lists.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('admin_links_settings_form'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'admin_links.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_menu_alter().
+ *
+ * Change node delete menu callback to an accessible tab on the node page.
+ */
+function admin_links_menu_alter(&$callbacks) {
+  $callbacks['node/%node/delete']['type'] = MENU_LOCAL_TASK;
+  $callbacks['node/%node/delete']['weight'] = 2;
+}
+
+/*
+ * Implementation of hook_form_alter().
+ *
+ * Hides the delete button from the node form since it is now a local task.
+ */
+function admin_links_form_alter(&$form, &$form_state, $form_id) {
+  if (isset($form['type']) && isset($form['#node']) && $form['type']['#value'] .'_node_form' == $form_id && isset($form['buttons']['delete'])) {
+    $form['buttons']['delete']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_link().
+ */
+function admin_links_link($type, $node = NULL, $teaser = FALSE) {
+  $links = array();
+  $destination = drupal_get_destination();
+
+  if ($type == 'node') {
+    if (!admin_links_is_node_page($node->nid) && variable_get('admin_links_link_tasks', 1)) {
+      // Move the node local tasks to links when getting links not on the current node page.
+      $local_tasks = admin_links_get_local_tasks('node/' . $node->nid, array('node', $node->nid));
+      foreach ($local_tasks as $local_task) {
+        // Sanitize the path to a string that can be used as a class.
+        $link_key = 'admin_links_' . preg_replace('/\W+/m', '_', $local_task['path']);
+        $links[$link_key] = array(
+          'title' => $local_task['title'],
+          'href' => $local_task['href'],
+          'query' => $destination,
+        );
+        $links[$link_key] += $local_task['localized_options'];
+      }
+    }
+    if (variable_get('admin_links_link_new', 0) && node_access('create', $node)) {
+      $links['admin_links_new'] = array(
+        'title' => t('New @type', array('@type' => drupal_strtolower(node_get_types('name', $node)))),
+        'href' => 'node/add/' . str_replace('_', '-', $node->type),
+        'query' => $destination,
+      );
+    }
+    if (admin_links_is_node_page($node->nid) && variable_get('admin_links_universaledit', 0) && node_access('update', $node)) {
+      drupal_add_link(array(
+        'rel' => 'alternate',
+        'type' => 'application/x-wiki',
+        'title' => t('Edit this page'),
+        'href' => url('node/' . $node->nid . '/edit', array('absolute' => TRUE)),
+      ));
+    }
+  }
+
+  return $links;
+}
+
+/**
+ * Implements hook_link_alter().
+ */
+function admin_links_link_alter(&$links, $node) {
+  foreach ($links as $index => $link) {
+    // Check if each link has an excluded path.
+    if (isset($link['href']) && admin_links_is_link_excluded($link['href'])) {
+      unset($links[$index]);
+    }
+  }
+}
+
+/**
+ * Fetches a list of the immediate local tasks for a specific Drupal path.
+ *
+ * @see menu_local_tasks()
+ */
+function admin_links_get_local_tasks($path, $map = array()) {
+  static $local_tasks = array();
+  static $router_items = array();
+
+  $path_item = menu_get_item($path);
+
+  if (!isset($router_items[$path_item['tab_root']])) {
+    $router_items[$path_item['tab_root']] = array();
+    $query = db_query("SELECT * FROM {menu_router} WHERE tab_root = '%s' AND path <> '%s' ORDER BY weight, title", $path_item['tab_root'], $path_item['path']);
+    while ($item = db_fetch_array($query)) {
+      if (!admin_links_is_link_excluded($item['path'])) {
+        // Exclude the links before any furthur processing.
+        $router_items[$path_item['tab_root']][] = $item;
+      }
+    }
+  }
+
+  if (!isset($local_tasks[$path])) {
+    $local_tasks[$path] = array();
+    foreach ($router_items[$path_item['tab_root']] as $item) {
+      _menu_translate($item, $map, TRUE);
+      if ($item['access']) {
+        // Merge some default options for l() to be used later.
+        $item['localized_options'] += array(
+          //'query' => drupal_get_destination(),
+          'attributes' => array(),
+        );
+        $item['localized_options']['attributes'] += array(
+          'title' => $item['description'] ? $item['description'] : $item['title'],
+        );
+        $local_tasks[$path][] = $item;
+      }
+    }
+  }
+
+  return $local_tasks[$path];
+}
+
+function admin_links_is_link_excluded($path) {
+  static $matches = array();
+  static $excludes;
+
+  if (!isset($matches[$path])) {
+    if (!isset($excludes)) {
+      $excludes = variable_get('admin_links_exclude', implode("\n", array('node/*/view', 'node/*/devel/*')));
+    }
+    $matches[$path] = drupal_match_path($path, $excludes);
+  }
+
+  return $matches[$path];
+}
+
+/**
+ * Checks if the current page is a node page.
+ *
+ * @param
+ *   An optional node ID to check if the current page is a specific node.
+ * @return
+ *   TRUE if this is a node page, or FALSE otherwise.
+ */
+function admin_links_is_node_page($nid = FALSE) {
+  static $is_node_page = array();
+
+  if (!isset($is_node_page[$nid])) {
+    $is_node_page[$nid] = preg_match('%node/' . ($nid ? $nid : '\d+') . '%', $_GET['q']);
+  }
+
+  return $is_node_page[$nid];
+}

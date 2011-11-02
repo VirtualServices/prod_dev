@@ -1,0 +1,98 @@
+<?php
+// $Id: dhtml_menu.module,v 1.27 2008/06/30 14:49:06 arancaytar Exp $
+
+/**
+ * @file dhtml_menu.module
+ * Allow click expansion of the menu tree via javascript, with
+ * graceful degradation.
+ */
+
+define('DHTML_MENU_DUPLICATE_DEFAULT', "admin\nadmin/build/menu\nnode/add");
+
+/**
+ * Implementation of hook_menu().
+ */
+function dhtml_menu_menu() {
+  $items['admin/settings/dhtml_menu'] = array(
+    'title'            => 'DHTML Menu',
+    'description'      => 'Adds new menus with DHTML to reduce page refreshes',
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('dhtml_menu_settings'),
+    'access arguments' => array('administer site configuration'),
+    'file'             => 'dhtml_menu.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_form_alter().
+ * @ingroup form
+ */
+function dhtml_menu_form_block_admin_configure_alter(&$form, $form_state) {
+  // Modify the form if it is a menu or the navigation block.
+  if ($form['module']['#value'] == 'menu' || ($form['module']['#value'] == 'user' && $form['delta']['#value'] == 1)) {
+    $dhtml = variable_get('dhtml_menu_menus', array());
+    
+    $form['dhtml_menu'] = array(
+      '#default_value'  => !empty($dhtml[$form['module']['#value']][$form['delta']['#value']]),
+      '#title'          => t('Use the DHTML effect'),
+      '#type'           => 'checkbox',
+      '#weight'         => -3,
+    );
+    $form['#submit']['_dhtml_menu_form_block_submit'] = '_dhtml_menu_form_block_submit';
+  }
+}
+
+/**
+ * Save the DHTML options
+ *
+ * @ingroup form
+ */
+function _dhtml_menu_form_block_submit(&$form, $form_state) {
+  $dhtml = variable_get('dhtml_menu_menus', array());
+  $dhtml[$form_state['values']['module']][$form_state['values']['delta']] = $form_state['values']['dhtml_menu'];
+  variable_set('dhtml_menu_menus', $dhtml);
+}
+
+/**
+ * Implementation of hook_preprocess().
+ * Change the normal behaviour ('theming') of hook_block().
+ *
+ * @ingroup themable
+ */
+function dhtml_menu_preprocess_block(&$variables) {
+  $delta = $variables['block']->delta;
+  $module = $variables['block']->module;
+  $dhtml = variable_get('dhtml_menu_menus', array());
+  
+  // If the menu has the DHTML menu option enabled,
+  // replace the entire block content with its DHTML equivalent
+  if (!empty($dhtml[$module][$delta])) {
+    $variables['block']->content = _dhtml_menu_build_block($module, $delta);
+  }
+}
+
+/** 
+ * Build a specific DHTML Menu block's content.
+ */
+function _dhtml_menu_build_block($module, $delta) {
+  $menu_name = $module == 'user' ? 'navigation' : $delta;
+  // Retrieve menu tree data and build a DHTML menu from it.
+  return theme('dhtml_menu_tree', menu_tree_all_data($menu_name));
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function dhtml_menu_theme($existing, $type) {
+  $theme['dhtml_menu_item'] = array(
+    'file'      => 'dhtml_menu.theme.inc',
+    'arguments' => array('item' => array(), 'id' => NULL),
+  );
+  $theme['dhtml_menu_tree'] = array(
+    'file'      => 'dhtml_menu.theme.inc',
+    'arguments' => array('tree' => array(), 'parent' => NULL, 'pid' => NULL),
+  );
+  return $theme;
+}

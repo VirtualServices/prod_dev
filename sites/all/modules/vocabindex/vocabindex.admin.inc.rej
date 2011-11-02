@@ -1,0 +1,25 @@
+***************
+*** 211,220 ****
+      $default_value = !is_null($vi->view) ? $vi->view : VOCABINDEX_VIEW_TREE;
+      $options = array(VOCABINDEX_VIEW_TREE => t('Tree'));
+      if ($vi->type == VOCABINDEX_VI_PAGE) {
+        $options[VOCABINDEX_VIEW_FLAT] = t('Browsable');
+        $options[VOCABINDEX_VIEW_ALPHABETICAL] = t('Alphabetical');
+      }
+      else {
+        $options[VOCABINDEX_VIEW_FLAT] = t('Flat');
+      }
+      $form[$id . 'view'] = array(
+--- 211,222 ----
+      $default_value = !is_null($vi->view) ? $vi->view : VOCABINDEX_VIEW_TREE;
+      $options = array(VOCABINDEX_VIEW_TREE => t('Tree'));
+      if ($vi->type == VOCABINDEX_VI_PAGE) {
++       $options[VOCABINDEX_VIEW_STATICTREE] = t('Static Tree');
+        $options[VOCABINDEX_VIEW_FLAT] = t('Browsable');
+        $options[VOCABINDEX_VIEW_ALPHABETICAL] = t('Alphabetical');
+      }
+      else {
++       $options[VOCABINDEX_VIEW_STATICTREE] = t('Static Tree');
+        $options[VOCABINDEX_VIEW_FLAT] = t('Flat');
+      }
+      $form[$id . 'view'] = array(

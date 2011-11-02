@@ -1,0 +1,95 @@
+# $Id: dhtml_menu.pot,v 1.1.2.1 2008/07/07 22:07:32 arancaytar Exp $
+#
+# LANGUAGE translation of Drupal (root)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  dhtml_menu.admin.inc,v 1.3 2008/06/30 15:08:57 arancaytar
+#  dhtml_menu.module,v 1.27 2008/06/30 14:49:06 arancaytar
+#  dhtml_menu.info,v 1.3 2008/02/14 17:15:57 arancaytar
+#  dhtml_menu.install,v 1.7 2008/06/30 14:49:06 arancaytar
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2008-07-05 18:49+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: dhtml_menu.admin.inc:17
+msgid "Use DHTML Effect"
+msgstr ""
+
+#: dhtml_menu.admin.inc:18
+msgid "Enable on all menus."
+msgstr ""
+
+#: dhtml_menu.admin.inc:18
+msgid "Keep current configuration."
+msgstr ""
+
+#: dhtml_menu.admin.inc:18
+msgid "Disable on all menus."
+msgstr ""
+
+#: dhtml_menu.admin.inc:25
+msgid "jQuery slide effect"
+msgstr ""
+
+#: dhtml_menu.admin.inc:26
+msgid "Menu slides when it opens and closes."
+msgstr ""
+
+#: dhtml_menu.admin.inc:32
+msgid "Hide Siblings effect"
+msgstr ""
+
+#: dhtml_menu.admin.inc:33
+msgid "Close all other menu items when one opens."
+msgstr ""
+
+#: dhtml_menu.admin.inc:39
+msgid "Duplicated menu items"
+msgstr ""
+
+#: dhtml_menu.admin.inc:40
+msgid "You can specify a list of menu items that should be displayed twice: Once as a parent item that expands and collapses the sub-menu and again as its own child item, which points directly to the page (the parent items still links on double-click). Enter one internal path (like \"admin\") on each line. To specify a custom link text, put it after the path, separated by a space."
+msgstr ""
+
+#: dhtml_menu.admin.inc:58
+msgid "DHTML has been enabled for all menus."
+msgstr ""
+
+#: dhtml_menu.admin.inc:62
+msgid "DHTML has been disabled for all menus."
+msgstr ""
+
+#: dhtml_menu.module:39
+msgid "Use the DHTML effect"
+msgstr ""
+
+#: dhtml_menu.module:17
+msgid "DHTML Menu"
+msgstr ""
+
+#: dhtml_menu.module:18 dhtml_menu.info:0
+msgid "Adds new menus with DHTML to reduce page refreshes"
+msgstr ""
+
+#: dhtml_menu.module:0
+msgid "dhtml_menu"
+msgstr ""
+
+#: dhtml_menu.install:21
+msgid "All your menu blocks now use DHTML behavior by default. This configuration can be changed in the <a href=\"@url\">block settings</a>."
+msgstr ""
+
+#: dhtml_menu.info:0
+msgid "DHTML Menus"
+msgstr ""
+

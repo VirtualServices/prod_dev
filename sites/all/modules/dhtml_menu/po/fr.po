@@ -1,0 +1,105 @@
+# translation of SB-dhtml_menu.po to
+# translation of dhtml_menu.po to
+msgid ""
+msgstr ""
+"Project-Id-Version: SB-dhtml_menu\n"
+"POT-Creation-Date: 2008-07-05 18:49+0200\n"
+"PO-Revision-Date: 2008-07-06 18:27+0200\n"
+"Last-Translator: sandrine\n"
+"Language-Team:  <fr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: KBabel 1.11.4\n"
+
+#: dhtml_menu.admin.inc:17
+msgid "Use DHTML Effect"
+msgstr "Utiliser l'effet DHTML"
+
+#: dhtml_menu.admin.inc:18
+msgid "Enable on all menus."
+msgstr "Activer sur tous les menus."
+
+#: dhtml_menu.admin.inc:18
+msgid "Keep current configuration."
+msgstr "Conserver la configuration actuelle."
+
+#: dhtml_menu.admin.inc:18
+msgid "Disable on all menus."
+msgstr "Désactiver sur tous les menus."
+
+#: dhtml_menu.admin.inc:25
+msgid "jQuery slide effect"
+msgstr "Effet de glissement jQuery"
+
+#: dhtml_menu.admin.inc:26
+msgid "Menu slides when it opens and closes."
+msgstr "Le menu \"glisse\" lorsqu'il s'ouvre et se ferme."
+
+#: dhtml_menu.admin.inc:32
+msgid "Hide Siblings effect"
+msgstr "Effet de dissimulation des éléments frères"
+
+#: dhtml_menu.admin.inc:33
+msgid "Close all other menu items when one opens."
+msgstr "Lorsque l'on ouvre un élément de menu, tous les autres se ferment."
+
+#: dhtml_menu.admin.inc:39
+msgid "Duplicated menu items"
+msgstr "Éléments de menu dupliqués"
+
+#: dhtml_menu.admin.inc:40
+msgid ""
+"You can specify a list of menu items that should be displayed twice: Once as "
+"a parent item that expands and collapses the sub-menu and again as its own "
+"child item, which points directly to the page (the parent items still links "
+"on double-click). Enter one internal path (like \"admin\") on each line. To "
+"specify a custom link text, put it after the path, separated by a space."
+msgstr ""
+"Vous pouvez spécifier une liste d'éléments de menu devant apparaître deux "
+"fois : une fois en tant qu'élément parent dépliant et repliant le sous-menu, "
+"et une fois en tant que son propre élément enfant qui pointe directement "
+"vers la page (les éléments parents proposent aussi ce lien, mais nécessitent "
+"un double clic). Saisissez un chemin interne (par exemple \"admin\") par "
+"ligne. Pour spécifier un texte de lien personnalisé, renseignez-le après le "
+"chemin, séparé de celui-ci par un espace."
+
+#: dhtml_menu.admin.inc:58
+msgid "DHTML has been enabled for all menus."
+msgstr "DHTML a été activé pour tous les menus."
+
+#: dhtml_menu.admin.inc:62
+msgid "DHTML has been disabled for all menus."
+msgstr "DHTML a été désactivé pour tous les menus."
+
+#: dhtml_menu.module:39
+msgid "Use the DHTML effect"
+msgstr "Utiliser l'effet DHTML"
+
+#: dhtml_menu.module:17
+msgid "DHTML Menu"
+msgstr "Menu DHTML"
+
+#: dhtml_menu.module:18 dhtml_menu.info:0
+msgid "Adds new menus with DHTML to reduce page refreshes"
+msgstr ""
+"Ajoute les nouveaux menus au format DHTML pour limiter les rafraîchissements "
+"de page"
+
+#: dhtml_menu.module:0
+msgid "dhtml_menu"
+msgstr "dhtml_menu"
+
+#: dhtml_menu.install:21
+msgid ""
+"All your menu blocks now use DHTML behavior by default. This configuration "
+"can be changed in the <a href=\"@url\">block settings</a>."
+msgstr ""
+"Tous vos blocs de menus utilisent désormais le comportement DHTML par "
+"défaut. Cette configuration peut être modifiée dans le <a href=\"@url\">paramétrage des blocs</a>."
+
+#: dhtml_menu.info:0
+msgid "DHTML Menus"
+msgstr "DHTML Menus"
+

@@ -1,0 +1,10 @@
+name = Visitors
+description = "This module used for displaying a visitors info."
+package = "Visitors"
+core = "6.x"
+; Information added by drupal.org packaging script on 2011-06-04
+version = "6.x-0.34"
+core = "6.x"
+project = "visitors"
+datestamp = "1307179021"
+

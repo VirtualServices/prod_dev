@@ -1,0 +1,19 @@
+***************
+*** 38,43 ****
+   */
+  define('VOCABINDEX_VIEW_ALPHABETICAL', 3);
+  /**
+   * A VI block.
+   */
+  define('VOCABINDEX_VI_BLOCK', 1);
+--- 38,47 ----
+   */
+  define('VOCABINDEX_VIEW_ALPHABETICAL', 3);
+  /**
++  * Static Tree view.
++  */
++ define('VOCABINDEX_VIEW_STATICTREE', 4);
++ /**
+   * A VI block.
+   */
+  define('VOCABINDEX_VI_BLOCK', 1);

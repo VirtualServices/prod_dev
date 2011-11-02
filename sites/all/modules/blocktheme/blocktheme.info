@@ -1,0 +1,11 @@
+; $Id: blocktheme.info,v 1.1.4.3 2010/11/09 00:27:41 amateescu Exp $;
+name = Block Theme
+description = Provides a configuration option to select custom themes for blocks
+core = 6.x
+
+; Information added by drupal.org packaging script on 2010-12-12
+version = "6.x-1.2"
+core = "6.x"
+project = "blocktheme"
+datestamp = "1292149238"
+

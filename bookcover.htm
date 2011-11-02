@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<title>Untitled</title>
+</head>
+
+<body>
+<div id="gbsthumbnail"></div>
+
+<script type="text/javascript">
+
+/* GBS Cover Script by Tim Spalding/LibraryThing */
+
+function addTheCover(booksInfo)
+{
+for (i in booksInfo)
+ {
+ var book = booksInfo[i];
+ if (book.thumbnail_url != undefined)
+  {
+  document.getElementById('gbsthumbnail').innerHTML =
+   '<img src="' + book.thumbnail_url + '"/>';
+  }
+ }
+}
+
+</script>
+
+<script src="http://books.google.com/books?jscmd=viewapi&bibkeys=ISBN:0399155392&callback=addTheCover"></script>
+
+
+</body>
+</html>

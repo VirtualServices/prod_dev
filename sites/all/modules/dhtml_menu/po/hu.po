@@ -1,0 +1,63 @@
+# $Id: hu.po,v 1.1 2007/06/20 04:56:16 melon Exp $
+#
+# HUNGARIAN translation of Drupal (dhtml_menu)
+# Copyright 2007 Drupal.hu Fordítói Csapat <forditas [at] drupal.hu>
+# Generated from files:
+#  dhtml_menu.module,v 1.6 2007/01/21 09:03:12 stevemckenzie
+#  dhtml_menu.info,v 1.1 2006/12/09 19:42:54 merlinofchaos
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: DHTML menu 5.x-0.x-dev Hungarian Translation\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2007-06-20 06:50+0100\n"
+"Last-Translator: Attila Beregszászi <melon@m42.hu>\n"
+"Language-Team: Drupal.hu Fordítói Csapat <forditas@drupal.hu>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-Language: Hungarian\n"
+
+#: dhtml_menu.module:30
+msgid "DHTML Menu"
+msgstr "DHTML Menü"
+
+#: dhtml_menu.module:50
+msgid "DHTML: "
+msgstr "DHTML: "
+
+#: dhtml_menu.module:66
+msgid "JavaScript Settings"
+msgstr "JavaScript Beállítások"
+
+#: dhtml_menu.module:69
+msgid "Use jQuery Slide Effects"
+msgstr "jQuery csúsztató hatások használata"
+
+#: dhtml_menu.module:70
+msgid "Menu's will slide open and closed."
+msgstr "A menük ki- és becsúsztatva jelennek meg."
+
+#: dhtml_menu.module:85
+msgid "Administer"
+msgstr "Aminisztráció"
+
+#: dhtml_menu.module:17
+msgid "administer dhtml menu"
+msgstr "dhtml menü adminisztrációja"
+
+#: dhtml_menu.module:0
+#: dhtml_menu.info:0
+msgid "dhtml_menu"
+msgstr "dhtml_menu"
+
+#: dhtml_menu.info:0
+msgid "Adds new menus with DHTML to reduce page refreshes"
+msgstr "Új DHTML menüket hoz létre az oldalletöltése csökkentése érdekében"
+
+#: dhtml_menu.info:0
+msgid "DHTML Menus"
+msgstr "DHTML Menük"
+

@@ -1,0 +1,208 @@
+<?php
+// $Id: question_answer.module,v 1.1.2.5 2010/11/09 11:24:10 jcisio Exp $
+
+/** @file
+ * This module add the question/answer ability to a node type.
+ * By jcisio
+ */
+
+/**
+ * Implementation of hook_init().
+ */
+function question_answer_init() {
+  drupal_add_css(drupal_get_path('module', 'question_answer') .'/question_answer.css', 'module');
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function question_answer_menu() {
+  $items['question_answer/select'] = array(
+    'title' => 'Select answer',
+    'page callback' => 'question_answer_select',
+    'page arguments' => array(2,3),
+    'access callback' => 'user_is_logged_in', 
+    'type' => MENU_CALLBACK,
+    'file' => 'question_answer.pages.inc',
+  );
+  $items['admin/settings/question_answer'] = array(
+    'title' => 'Question/Answer',
+    'description' => 'Allows the admin to configure the Q/A settings',
+    'page callback' => 'drupal_get_form', 
+    'page arguments' => array('question_answer_settings'),
+    'file' => 'question_answer.pages.inc',
+    'access arguments' => array('administer site configuration'),
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function question_answer_form_alter(&$form, &$form_state, $form_id) {
+  if ($form['#id'] == 'node-form' && $maxlength = variable_get('question_answer_maxlength', 0)) {
+    $qtype = _question_answer_nodetypes();
+    if (in_array($form['type']['#value'], array_keys($qtype))) {
+      $form['title']['#maxlength'] = $maxlength;
+    }
+  } 
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function question_answer_theme() {
+  return array(
+    'question_answer_formatter_answer' => array(
+      'arguments' => array('element' => NULL),
+    ),
+    'question_answer_formatter_duration' => array(
+      'arguments' => array('element' => NULL),
+    ),
+    'question_answer_answer' => array(
+      'arguments' => array('node' => NULL, 'comment' => NULL, 'account' => NULL),
+      'template' => 'question_answer-answer',
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_comment().
+ */
+function question_answer_comment(&$a1, $op) {
+  switch ($op) {
+    case 'delete':
+    case 'update':
+      // check if comment is selected
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_link().
+ *
+ * Add show/hide comment link
+ */
+function question_answer_link($type, $object = NULL, $teaser = FALSE) {
+  global $user;
+  $links = array();
+
+  if ($type == 'comment') {
+    $node = node_load($object->nid);
+    $qtype = _question_answer_nodetypes();
+    if (in_array($node->type, array_keys($qtype)) && $node->uid == $user->uid && empty($node->{$qtype[$node->type]['answer']}[0]['value'])) {
+      $links['question_answer_select'] = array(
+        'title' => t('select'),
+        'href' => 'question_answer/select/'. $object->cid .'/'. drupal_get_token('question_answer/select/'. $object->cid),
+        'attributes' => array(
+          'title' => t('Select this comment.'),
+          'class' => 'ctools-use-ajax',
+        ),
+      );
+      ctools_add_js('ajax-responder');
+    }
+  }
+  return $links;
+}
+
+/**
+* Declare information about a formatter.
+*
+* @return
+*   An array keyed by formatter name. Each element of the array is an associative
+*   array with these keys and values:
+*   - "label": The human-readable label for the formatter.
+*   - "field types": An array of field type names that can be displayed using
+*     this formatter.
+*/
+function question_answer_field_formatter_info() {
+  return array(
+    'answer' => array(
+      'label' => t('Selected answer'),
+      'field types' => array('number_integer'),
+    ),
+    'duration' => array(
+      'label' => t('Remaining time'),
+      'field types' => array('number_integer'),
+    ),
+  );
+}
+
+/**
+ * Override or insert variables into the comment templates.
+ *
+ * @param $variables
+ *   An array of variables to pass to the theme template.
+ */
+function question_answer_preprocess_comment(&$variables) {
+  $qtype = _question_answer_nodetypes();
+  $node = node_load($variables['comment']->nid);
+
+  if (in_array($node->type, array_keys($qtype)) && $variables['comment']->cid === $node->{$qtype[$node->type]['answer']}[0]['value']) {
+    $variables['status'] .= ' question_answer-selected';
+  }
+}
+
+/**
+ * Theme implementations
+ */
+function theme_question_answer_formatter_answer($element) {
+  $qtype = _question_answer_nodetypes();
+  if ($comment = _comment_load($element['#item']['value'])) {
+    $comment->comment = check_markup($comment->comment, $comment->format, FALSE);
+    return theme('question_answer_answer', $element['#node'], $comment, user_load($comment->uid));
+  }
+}
+
+function theme_question_answer_formatter_duration($element) {
+  // Only display this field if a duration is set
+  if (! empty($element['#item']['value'])) {
+    $qtype = _question_answer_nodetypes();
+    $node = node_load($element['#node']->nid);
+    $answer = $node->{$qtype[$node->type]['answer']}[0]['value'];
+
+    // Only display this field if no answer is selected
+    if (empty($answer)) {
+      $remain = $element['#item']['value'] + $element['#node']->created - time();
+
+      // If expired, select an answer
+      if ($remain < 0) {
+        if ($node->{$qtype[$node->type]['answer']}[0]['value'] === NULL) {
+          $selected = array('cid' => 0, 'value' => 0);
+          $result = db_query('SELECT cid FROM {comments} WHERE nid=%d ORDER BY timestamp', $node->nid);
+          while ($row = db_fetch_object($result)) {
+            $votes = votingapi_select_results(array('content_id' => $row->cid, 'content_type' => 'comment', 'function' => 'sum'));
+            if (count($votes) > 0 && $votes[0]['value'] > $selected['value']) {
+              $selected['cid'] = $row->cid;
+              $selected['value'] = $votes[0]['value'];
+            }
+          }
+
+          if ($selected['cid'] > 0) {
+            $node->{$qtype[$node->type]['answer']}[0]['value'] = $selected['cid'];
+            node_save($node);
+            drupal_set_message(t('Comment #!cid has automatically been selected as the best answer', array('!cid' => $selected['cid'])));
+          }
+        }
+      }
+      return $remain > 0 ? format_interval($remain) : 'expired';
+    }
+  }
+}
+
+/**
+ * Retrieve all node types that support Q/A
+ * The API is generic so that it supports multiple nodetypes/fields
+ */
+function _question_answer_nodetypes() {
+  static $nodetypes;
+  
+  if (! $nodetypes) {
+    $nodetypes = array(variable_get('question_answer_nodetype', 'question') => array(
+      'answer' => variable_get('question_answer_fieldtype', 'field_answer'),
+      'duration' => variable_get('question_answer_duration', 'field_duration'),
+    ));
+  }
+
+  return $nodetypes;
+}

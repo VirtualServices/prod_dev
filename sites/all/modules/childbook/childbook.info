@@ -1,0 +1,6 @@
+; $Id$
+name = "Children's book content"
+description = "Custom module for adding images, titles and a summary to nodes based on a catalog number input."
+version = 6.1
+core = 6.x
+package = CCK

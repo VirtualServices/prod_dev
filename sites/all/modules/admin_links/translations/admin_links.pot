@@ -1,0 +1,62 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  admin_links.admin.inc,v 1.1.2.8 2009/06/27 08:02:55 davereid
+#  admin_links.module,v 1.1.2.15 2009/09/01 01:40:48 davereid
+#  admin_links.info,v 1.1.2.6 2009/06/08 02:46:59 davereid
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2009-08-31 20:48-0500\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: admin_links.admin.inc:24
+msgid "Exclude the following content local tasks from being added to the content teaser links"
+msgstr ""
+
+#: admin_links.admin.inc:25
+msgid "One path per line. You can use <em>*</em> as a wildcard. Possible values: %list,"
+msgstr ""
+
+#: admin_links.admin.inc:31
+msgid "Add a link to create a new content of the same type (for example, <em>New Story</em>)."
+msgstr ""
+
+#: admin_links.admin.inc:36
+msgid "Add support for the <a href=\"@ueb\">Universal Edit Button</a> on editable content."
+msgstr ""
+
+#: admin_links.module:60
+msgid "New @type"
+msgstr ""
+
+#: admin_links.module:69
+msgid "Edit this page"
+msgstr ""
+
+#: admin_links.module:172
+msgid "Default variable for %variable not found."
+msgstr ""
+
+#: admin_links.module:15 admin_links.info:0
+msgid "Admin links"
+msgstr ""
+
+#: admin_links.module:16
+msgid "Settings for administration links in node lists."
+msgstr ""
+
+#: admin_links.info:0
+msgid "Adds edit and delete links to node lists, and adds support for the Universal Edit Button."
+msgstr ""
+

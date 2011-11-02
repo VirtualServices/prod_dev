@@ -1,0 +1,80 @@
+# $Id: CHANGELOG.txt,v 1.11 2008/07/16 06:38:20 augustin Exp $
+# CHANGELOG.txt
+################
+
+
+Drupal 6 version vs. Drupal 5 version
+         Announcement text
+======================================
+
+Directory.module for Drupal 6 is in many ways very different from the Drupal 5 version.
+
+The main difference is that with Drupal 6, directory module does not handle the display of nodes anymore. It now relies on core's taxonomy module to do the job. 
+
+There are two implications:
+1) The paths like directory/nnn where nnn was a term ID no longer exist. Instead, the main directory page links to taxonomy/term/nnn pages. 
+2) The first point means that the way the node teasers are displayed has completely changed. In D5 directory, the node display was broken at best. In D6, we rely on taxonomy to display teasers just like they would be displayed on the front page.
+
+The taxonomy page is themeable, so if you wish to have a different look for the node listing, you can change it at the theme level. See the theming documentation about this.
+
+The work for a stable Drupal 6 release of directory is still ongoing. There are still some serious bugs to fix, and new cool features to be added. D6 directory is still in alpha stage. However, it should be stable enough to use on a small site with not too many taxonomy terms. 
+
+About the Drupal 5 version of directory: this version is no longer supported at all. The code is too poor to be maintained. Huge parts of the module have been rewritten and it will be too difficult to backport fixes and new features to Drupal 5. 
+
+You are welcome to test the new Drupal 6 alpha release of directory.module and use the issue queue to report any problem.
+
+
+
+
+
+
+
+
+16th July 2008
+ * Removed a huge chunk of code which used to display nodes and taxonomy terms according to the first letter of the term.
+   The code was completely broken, and 
+   since we don't directly deal with node selection and teaser display anymore (we use taxonomy.module for that),
+   almost all of the theming functions could be discarded. 
+ * Show subterms for all terms in pages like taxonomy/term/23+67 and taxonomy/term/23,67.
+ * Turn the vocabulary names in the main directory into links to the per-vocabulary page.
+ * Added a list of subterms for any term on a taxonomy/term/$tid page.
+ * Fixed the directory/vocabulary/$vid pages.
+
+29th June 2008
+ * The big code cleanup has started.
+ -> removed directory/random callback (which redirected to a random selected node).
+ -> removed the directory/term/$tid+$tid callback, which originally was a copy of taxonomy_term_page().
+    We now want to reuse as much of taxonomy.module's display as possible. 
+ -> removed directory/$tid pages. We now use core taxonomy/term/$vid. 
+
+
+28th June 2008
+ * module upgrade to Drupal 6.
+
+# tag DRUPAL-5--2-0 : 16th July 2007. 
+# ====================================
+
+ * implement per-vocabulary directories.
+1) there is a menu item you can enable for each vocabulary.
+2) all invalid values of $tid and $vid are redirected to the main directory page
+3) the js collapsed setting is not used if we are only listing one vocabulary.
+4) the listing for each vocabulary uses the same theming function as for the main page.
+
+ * add javascript collapsible form + setting for each vocab, on the main page.
+
+ * Make it possible to individually theme the node count area (printed after the term name),
+without having to modify the whole theme function.
+ This shouldn't affect in anyway other sites which are happy with the default presentation.
+
+
+# tag DRUPAL-5--1-0 : 1st June 2007. 
+# ====================================
+
+* first Drupal 5 release.
+
+# tag DRUPAL-4-7 : 21st October 2006. 
+# ====================================
+
+* first official release by innactivist.
+
+

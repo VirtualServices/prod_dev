@@ -1,0 +1,30 @@
+<?php
+// $Id: directory.install,v 1.3 2008/06/28 11:19:12 augustin Exp $
+
+/**
+ * @file
+ * Removes variables when uninstalling the module.
+ */
+
+/**
+ * Unset the variables that are not going to be used anymore.
+ * See: http://drupal.org/node/144958
+ */
+function directory_update_1() {
+  variable_del('directory_cat_res_count');
+  variable_del('directory_subcat_res_count');
+  return array();
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function directory_uninstall() {
+  variable_del('directory_no_nodes');
+  variable_del('directory_vocabularies_root');
+  variable_del('directory_vocabularies_collapsed');
+  variable_del('directory_show_child_counts');
+  variable_del('directory_hide_empty_terms');
+  variable_del('directory_help');
+}
+

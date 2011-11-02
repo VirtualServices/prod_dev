@@ -1,0 +1,11 @@
+name = Header Image
+description = Displays an image in a header block.
+core = 6.x
+package = Other
+
+; Information added by drupal.org packaging script on 2011-05-06
+version = "6.x-1.0"
+core = "6.x"
+project = "headerimage"
+datestamp = "1304668916"
+

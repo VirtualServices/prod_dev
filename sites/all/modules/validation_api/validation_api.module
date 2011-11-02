@@ -1,0 +1,610 @@
+<?php
+// $Id: validation_api.module,v 1.25.2.23 2008/12/03 17:05:01 tapocol Exp $
+
+/**
+ * @file
+ */
+
+define('HOOK_ADD_VALIDATOR', 'add_validator');
+
+/**
+ * Implementation of hook_help().
+ */
+function validation_api_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#validation_api':
+      $output = '<p>'. t('Validation API offers the ability to create a validation (as a PHP script or a regular-expression script) to validate any field on the site.') .'</p>';
+      $output .= '<p>'. t('Validators are the scripts that are run to test if a given field is valid. Fields are representatives of any form field on the site. You will want to assign validators to fields to make the field be validated before submission of the form.') .'</p>';
+      return $output;
+    case 'admin/build/validation_api':
+      $output = '<p>'. t('Validators are the scripts that are run to test if a given field is valid. Fields are representatives of any form field on the site. You will want to assign validators to fields to make the field be validated before submission of the form.') .'</p>';
+      return $output;
+    case 'admin/build/validation_api/validators':
+      $output = '<p>'. t('This page contains all of the validators in the database. You can add/edit your own validators, import validators from other modules, import validators with the code from an export, export code for a validator for importing elsewhere, and clone validators. The update link under Ops (You may or may not see this link) is for imported validators from other modules that are now different from the one in the database.');
+      return $output;
+    case 'admin/build/validation_api/validators/add':
+      $output = '<p>'. t('The rule is the heart and soul of validating. It is the script that is run to validate the value passed to this validator. This script can either be PHP or RegEx (determined by the \'Type\' select box).') .'</p>';
+      $output .= '<p>'. t('If you choose PHP, you need to use $value as the value being validated and (if applicable) use $arguments[x] as the argument in the rule with x representing the delta of the argument. If you choose RegEx, the value will automatically be used and (if applicable) you would need to use %arguments[x] as the argument with the x representing the delta of the argument. (e.g. Rule: "/^((.)|(\s)){%arguments[0],%arguments[1]}$/").') .'</p>';
+      $output .= '<p>'. t('Messages may use placeholders to further describe the error. You need to use %field as the placeholder for the name of the field and use %arguments[x] as the placeholder for the argument with x representing the delta of the argument.') .'</p>';
+      return $output;
+    case 'admin/build/validation_api/validators/edit/%':
+      $output = '<p>'. t('The rule is the heart and soul of validating. It is the script that is run to validate the value passed to this validator. This script can either be PHP or RegEx (determined by the \'Type\' select box).') .'</p>';
+      $output .= '<p>'. t('If you choose PHP, you need to use $value as the value being validated and (if applicable) use $arguments[x] as the argument in the rule with x representing the delta of the argument. If you choose RegEx, the value will automatically be used and (if applicable) you would need to use %arguments[x] as the argument with the x representing the delta of the argument. (e.g. Rule: "/^((.)|(\s)){%arguments[0],%arguments[1]}$/").') .'</p>';
+      $output .= '<p>'. t('Messages may use placeholders to further describe the error. You need to use %field as the placeholder for the name of the field and use %arguments[x] as the placeholder for the argument with x representing the delta of the argument.') .'</p>';
+      return $output;
+    case 'admin/build/validation_api/validators/import':
+      $output = '<p>'. t('You can check any validator(s) you want imported from modules, and/or you can put code from an code export into the text-area.') .'</p>';
+      return $output;
+    case 'admin/build/validation_api/validators/export':
+      $output = '<p>'. t('Check which validators you would like to export. After exporting, copy the code in the text-area and paste into the import text-area to import these validators on other set-ups.') .'</p>';
+      return $output;
+    case 'admin/build/validation_api/validators/clone':
+      $output = '<p>'. t('Check which validators you would like to clone. This will create a copy of that validator and place it in the database with a number added to the end of the name for uniqueness.') .'</p>';
+      return $output;
+    case 'admin/build/validation_api/fields':
+      $output = '<p>'. t('This page contains all of the fields in the database that have been associated with a validator. You can add/edit your own fields, but I recommend you go to the field you want to add a validator to and click the \'add a validator\' link below it for adding fields.');
+      return $output;
+    case 'admin/build/validation_api/fields/add':
+      $output = '<p>'. t('On the first step: For Form ID, use the form_id where the field resides. The Field Name is the name of the field you want to validate. I recommend getting this data by going to the page the form resides on and using the \'add a validator\' link directly below the field in question.') .'</p>';
+      $output .= '<p>'. t('On the second step: There may be arguments available for you to fill in, just follow the guidelines as these were set by the validator you selected. You can override the message form the validator, as well.') .'</p>';
+      return $output;
+    case 'admin/build/validation_api/fields/edit/%':
+      $output = '<p>'. t('There may be arguments available for you to fill in, just follow the guidelines as these were set by the validator you selected. You can override the message form the validator, as well.') .'</p>';
+      return $output;
+  }
+}
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function validation_api_form_alter(&$form, $form_state, $form_id) {
+  $form = _validation_api_form_fields($form, $form_id, _validation_api_fields($form_id), variable_get('excluded_validation_fields', array('item', 'value', 'fieldset', 'hidden', 'button', 'submit', 'image_button', 'markup', 'token')));
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function validation_api_menu() {
+  $items['admin/build/validation_api'] = array(
+    'title' => 'Validation API',
+    'description' => 'Create and manage validators and a form field\'s relationship with a validator.',
+    'page callback' => 'validation_api_admin',
+    'access callback' => 'user_access',
+    'access arguments' => array('administer validators'),
+    'file' => 'validation_api.admin.inc',
+  );
+  $items['admin/build/validation_api/settings'] = array(
+    'title' => 'Settings',
+    'description' => 'Modify settings for the Validation API system.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('validation_api_admin_settings_form'),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer validators'),
+    'file' => 'validation_api.admin.inc',
+    'weight' => 2,
+  );
+  $items['admin/build/validation_api/validators'] = array(
+    'title' => 'Validators',
+    'description' => 'Create and manage validator rules, messages, etc.',
+    'page callback' => 'validation_api_admin_validators',
+    'access callback' => 'user_access',
+    'access arguments' => array('administer validators'),
+    'file' => 'validation_api.admin.inc',
+  );
+  $items['admin/build/validation_api/validators/list'] = array(
+    'title' => 'List',
+    'type' => MENU_DEFAULT_LOCAL_TASK
+  );
+  $items['admin/build/validation_api/validators/add'] = array(
+    'title' => 'Add',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('validation_api_admin_validators_form'),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer validators'),
+    'file' => 'validation_api.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 1,
+  );
+  $items['admin/build/validation_api/validators/import'] = array(
+    'title' => 'Import',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('validation_api_admin_import_form'),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer validators'),
+    'file' => 'validation_api.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 4,
+  );
+  $items['admin/build/validation_api/validators/export'] = array(
+    'title' => 'Export',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('validation_api_admin_export_form'),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer validators'),
+    'file' => 'validation_api.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 5,
+  );
+  $items['admin/build/validation_api/validators/clone'] = array(
+    'title' => 'Clone',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('validation_api_admin_clone_form'),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer validators'),
+    'file' => 'validation_api.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 6,
+  );
+  $items['admin/build/validation_api/validators/edit/%'] = array(
+    'title' => 'Edit',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('validation_api_admin_validators_form', 5),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer validators'),
+    'file' => 'validation_api.admin.inc',
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/build/validation_api/validators/update/%'] = array(
+    'title' => 'Update',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('validation_api_admin_update_form', 5),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer validators'),
+    'file' => 'validation_api.admin.inc',
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/build/validation_api/validators/disconnect/%'] = array(
+    'title' => 'Disconnect',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('validation_api_admin_disconnect_form', 5),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer validators'),
+    'file' => 'validation_api.admin.inc',
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/build/validation_api/validators/delete/%'] = array(
+    'title' => 'Delete',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('validation_api_admin_validators_delete', 5),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer validators'),
+    'file' => 'validation_api.admin.inc',
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/build/validation_api/fields'] = array(
+    'title' => 'Fields',
+    'description' => 'Create and manage a form field\'s validator, argument, etc.',
+    'page callback' => 'validation_api_admin_fields',
+    'access callback' => 'user_access',
+    'access arguments' => array('administer validation fields'),
+    'file' => 'validation_api.admin.inc',
+    'weight' => 1,
+  );
+  $items['admin/build/validation_api/fields/list'] = array(
+    'title' => 'List',
+    'type' => MENU_DEFAULT_LOCAL_TASK
+  );
+  $items['admin/build/validation_api/fields/add'] = array(
+    'title' => 'Add',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('validation_api_admin_fields_form'),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer validation fields'),
+    'file' => 'validation_api.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items['admin/build/validation_api/fields/edit/%'] = array(
+    'title' => 'Edit',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('validation_api_admin_fields_form', 5),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer validation fields'),
+    'file' => 'validation_api.admin.inc',
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/build/validation_api/fields/delete/%'] = array(
+    'title' => 'Delete',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('validation_api_admin_fields_delete', 5),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer validators'),
+    'file' => 'validation_api.admin.inc',
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function validation_api_perm() {
+  return array('administer validation fields', 'administer validators', 'administer php validators');
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function validation_api_theme($existing, $type, $theme, $path) {
+  return array(
+    'validation_api_admin_import' => array(
+      'arguments' => array('form' => array()),
+      'file' => 'validation_api.admin.inc',
+    ),
+  );
+}
+
+/**
+ * Helper function to incorporate the elements that need validation into the structured form array.
+ * Also, adds a 'Add a validator to...' link to the #suffix of core text-like elements.
+ *
+ * @param $elements
+ *   Structured section of a form array.
+ * @param $form_id
+ *   Form ID.
+ * @param $validation_api_fields
+ *   Structured array for fields from this form_id
+ * @param $excluded_fields
+ *   An array of fields that are not allowed to be validated on
+ * @param $tree
+ *   String for the current place in an FAPI tree
+ *
+ * @return
+ *   Returns the element with possible changes.
+ */
+function _validation_api_form_fields($elements, $form_id, $validation_api_fields, $excluded_fields, $tree = '') {
+  foreach (element_children($elements) as $key) {
+    if (is_array($elements[$key])) {
+      // new_tree sets a new place in a tree with the current key.
+      $new_tree = $tree;
+      // If there is anything in new_tree then add a brackets around the key.
+      if (drupal_strlen($new_tree) > 0) {
+        $new_tree .= '['. $key .']';
+      }
+      // Else, if #tree is TRUE then set the key to the tree.
+      elseif (isset($elements[$key]['#tree']) && $elements[$key]['#tree']) {
+        $new_tree = $key;
+      }
+
+      // Check if there is a #type assigned to the key and make sure it is not an excluded field.
+      if (isset($elements[$key]['#type']) && !in_array($elements[$key]['#type'], $excluded_fields)) {
+        $current_tree = (drupal_strlen($new_tree) > 0 ? $new_tree : $key);
+        // Links to add to the suffix of this element.
+        $links = array(l(t('Add a validator to !name', array('!name' => $current_tree)), 'admin/build/validation_api/fields/add', array('query' => array('form_id' => $form_id, 'form_field' => $current_tree))));
+        // If the current tree has a validator associated, then attach the validator function to validate it.
+        if (isset($validation_api_fields[$current_tree])) {
+          $elements[$key]['#element_validate'][] = '_validation_api_validator';
+        }
+
+        // If there are brackets in the current tree, then we need to add more links and check for validators for each placeholder.
+        if (preg_match('/\[([a-zA-Z0-9_\-]*)\]/', $current_tree)) {
+          $base = drupal_substr($current_tree, 0, strpos($current_tree, '['));
+          $current_tree_array = array();
+          preg_match_all('/\[([a-zA-Z0-9_\-]*)\]/', $current_tree, $current_tree_array);
+          $current_tree_array = $current_tree_array[1];
+          $count = count($current_tree_array);
+          // Need to run through every single placeholder option for the tree.
+          for ($i = 0; $i < $count; $i++) {
+            for ($ii = 1; $ii <= $count - $i; $ii++) {
+              $adjusted_array = $current_tree_array;
+              for ($iii = 1; $iii <= $i; $iii++) {
+                $adjusted_array[$count - $iii] = '%';
+              }
+              $adjusted_array[$count - $ii - $i] = '%';
+              $full_name = $base .'['. implode('][', $adjusted_array) .']';
+              $links[] = l(t('Add a validator to !name', array('!name' => $full_name)), 'admin/build/validation_api/fields/add', array('query' => array('form_id' => $form_id, 'form_field' => $full_name)));
+              if (isset($validation_api_fields[$full_name]) && (!isset($elements[$key]['#element_validate']) || !in_array('_validation_api_validator', $elements[$key]['#element_validate']))) {
+                $elements[$key]['#element_validate'][] = '_validation_api_validator';
+              }
+            }
+          }
+        }
+
+        // Only add the links to the suffix, if they are enabled and the user has access to administer them.
+        if (variable_get('validation_api_links', 1) && user_access('administer validation fields')) {
+          drupal_add_css(drupal_get_path('module', 'validation_api') .'/validation_api.css');
+          if (count($links) > 1) {
+            $elements[$key]['#suffix'] = (isset($elements[$key]['#suffix']) ? $elements[$key]['#suffix'] : '') .'<div class="add_validator">'. theme('item_list', $links, NULL, 'ul', array('class' => 'add_validator')) .'</div>';
+            drupal_add_js(drupal_get_path('module', 'validation_api') .'/validation_api.validator_link.js');
+          }
+          else {
+            $elements[$key]['#suffix'] = (isset($elements[$key]['#suffix']) ? $elements[$key]['#suffix'] : '') .'<div class="add_validator">'. $links[0] .'</div>';
+          }
+          $elements[$key]['#suffix'] .= "\n";
+        }
+      }
+
+      // This function will repeat until we have reached the end of a recursive array.
+      $elements[$key] = _validation_api_form_fields($elements[$key], $form_id, $validation_api_fields, $excluded_fields, $new_tree);
+    }
+  }
+
+  // Step back in the array, or if this is the full form, it will return the final form with all changes to the hook_form_alter function.
+  return $elements;
+}
+
+/**
+ * Helper function to get each field that needs validation from a given form ID.
+ *
+ * @param $form_id
+ *   Form ID.
+ *
+ * @return
+ *   Returns a keyed array of field validator objects.
+ *
+ * array(
+ *   $field1_name => array(
+ *     $field1_validator1->obj,
+ *     $field1_validator2->obj,
+ *     ...
+ *   ),
+ *   $field2_name => array(
+ *     $field2_validator1->obj,
+ *     $field2_validator2->obj,
+ *     ...
+ *   ),
+ *   ...
+ * );
+ */
+function _validation_api_fields($form_id) {
+  $result = db_query('SELECT f.vafid AS vafid, f.form_id AS form_id, f.form_field AS form_field, f.vavid AS vavid, f.allow_empty AS allow_empty, f.message AS message, av.vaaid AS vaaid, av.value AS arg_value, a.delta AS arg_delta FROM {validation_api_fields} AS f LEFT JOIN {validation_api_arguments_values} AS av ON f.vafid = av.vafid LEFT JOIN {validation_api_arguments} AS a ON av.vaaid = a.vaaid WHERE f.form_id = \'%s\'', $form_id);
+  $fields = array();
+  while ($obj = db_fetch_object($result)) {
+    // If the validator has already been set, then we just need to add the next set of arguments to the object.
+    if (isset($fields[$obj->form_field][$obj->vafid])) {
+      $fields[$obj->form_field][$obj->vafid]->arguments[$obj->arg_delta]->vaaid = $obj->vaaid;
+      $fields[$obj->form_field][$obj->vafid]->arguments[$obj->arg_delta]->value = $obj->arg_value;
+      $fields[$obj->form_field][$obj->vafid]->arguments[$obj->arg_delta]->delta = $obj->arg_delta;
+    }
+    // Else, set up the object with arguments, if argumets are present.
+    else {
+      if (!empty($obj->vaaid)) {
+        $obj->arguments[$obj->arg_delta]->vaaid = $obj->vaaid;
+        $obj->arguments[$obj->arg_delta]->value = $obj->arg_value;
+        $obj->arguments[$obj->arg_delta]->delta = $obj->arg_delta;
+      }
+      unset($obj->vaaid);
+      unset($obj->arg_value);
+      unset($obj->arg_delta);
+      $fields[$obj->form_field][$obj->vafid] = $obj;
+    }
+  }
+
+  return $fields;
+}
+
+/**
+ * Get an object for every validator in the database.
+ *
+ * @return
+ *   Returns a keyed array of validator objects with a description of it's arguments.
+ *
+ * array(
+ *   $validator1_id => $validator1->obj,
+ *   $validator2_id => $validator2->obj,
+ *   ...
+ * );
+ */
+function _validation_api_validators() {
+  $validators = array();
+  $result = db_query('SELECT v.vavid AS vavid, v.name AS name, v.type AS type, v.rule AS rule, v.message AS message, v.module AS module, v.delta AS delta, a.vaaid AS vaaid, a.delta AS arg_delta, a.name AS arg_name, a.description AS arg_description FROM {validation_api_validators} AS v LEFT JOIN {validation_api_arguments} AS a ON v.vavid = a.vavid ORDER BY v.name ASC, a.delta ASC');
+  while ($obj = db_fetch_object($result)) {
+    // If the validator has already been set, then just add the argument object to the validator object.
+    if (isset($validators[$obj->vavid])) {
+      $validators[$obj->vavid]->arguments[$obj->vaaid]->vaaid = $obj->vaaid;
+      $validators[$obj->vavid]->arguments[$obj->vaaid]->name = $obj->arg_name;
+      $validators[$obj->vavid]->arguments[$obj->vaaid]->description = $obj->arg_description;
+      $validators[$obj->vavid]->arguments[$obj->vaaid]->delta = $obj->arg_delta;
+    }
+    // Else, set up the object with the argument object, if there is an argument object is present.
+    else {
+      if (!empty($obj->vaaid)) {
+        $obj->arguments[$obj->vaaid]->vaaid = $obj->vaaid;
+        $obj->arguments[$obj->vaaid]->name = $obj->arg_name;
+        $obj->arguments[$obj->vaaid]->description = $obj->arg_description;
+        $obj->arguments[$obj->vaaid]->delta = $obj->arg_delta;
+      }
+      unset($obj->vaaid);
+      unset($obj->arg_name);
+      unset($obj->arg_description);
+      unset($obj->arg_delta);
+      $validators[$obj->vavid] = $obj;
+    }
+  }
+
+  return $validators;
+}
+
+/**
+ * Get an object for every validator in hooks.
+ *
+ * @return
+ *   Returns a keyed array of validator objects.
+ *
+ * array(
+ *   $validator1_id => $validator1->obj,
+ *   $validator2_id => $validator2->obj,
+ *   ...
+ * );
+ */
+function _validation_api_validators_from_hook() {
+  $validators = array();
+  foreach (module_implements(HOOK_ADD_VALIDATOR) as $module) {
+    $hook_return = call_user_func($module .'_'. HOOK_ADD_VALIDATOR);
+    foreach ($hook_return as $delta => $validator) {
+      $validators[$module .'-'. $delta] = $validator;
+      $validators[$module .'-'. $delta]->module = $module;
+      $validators[$module .'-'. $delta]->delta = $delta;
+    }
+  }
+
+  return $validators;
+}
+
+/**
+ * Function that is used in a form element's #element_validate property.
+ * It is used to find all the validators (with or without placeholders) that need to be run.
+ *
+ * @param $element
+ *   A form element's keyed array.
+ * @param &$form_state
+ *   The state of the form.
+ *
+ * @return
+ *   Nothing is returned.
+ */
+function _validation_api_validator($element, &$form_state) {
+  static $validators;
+  static $validation_api_fields;
+
+  // Since this function could be called an infinite amount of times, the next two ifs will only run on the first time.
+  if (!isset($validators)) {
+    $validators = _validation_api_validators();
+  }
+  if (!isset($validation_api_fields)) {
+    $validation_api_fields = _validation_api_fields($form_state['values']['form_id']);
+  }
+
+  // Make sure the element is an array and has a #name, so we can work with it.
+  if (is_array($element) && isset($element['#name'])) {
+    // If the #name has validators associated to it, then it runs the helper function that validates it.
+    if (isset($validation_api_fields[$element['#name']])) {
+      foreach ($validation_api_fields[$element['#name']] as $validation_api_field) {
+        _validation_api_run_validator($element, $form_state, $validation_api_field, $validators[$validation_api_field->vavid]);
+      }
+    }
+
+    if (preg_match('/\[([a-zA-Z0-9_\-]*)\]/', $element['#name'])) {
+      $base = drupal_substr($element['#name'], 0, strpos($element['#name'], '['));
+      $element_tree_array = array();
+      preg_match_all('/\[([a-zA-Z0-9_\-]*)\]/', $element['#name'], $element_tree_array);
+      $element_tree_array = $element_tree_array[1];
+      $count = count($element_tree_array);
+      // Runs a loop for every possible placeholder combination.
+      for ($i = 0; $i < $count; $i++) {
+        for ($ii = 1; $ii <= $count - $i; $ii++) {
+          $adjusted_array = $element_tree_array;
+          for ($iii = 1; $iii <= $i; $iii++) {
+            $adjusted_array[$count - $iii] = '%';
+          }
+          $adjusted_array[$count - $ii - $i] = '%';
+          $full_name = $base .'['. implode('][', $adjusted_array) .']';
+          // If the name with placeholders has validators associated to it, then it runs the helper function that validates it.
+          if (isset($validation_api_fields[$full_name])) {
+            foreach ($validation_api_fields[$full_name] as $validation_api_field) {
+              _validation_api_run_validator($element, $form_state, $validation_api_field, $validators[$validation_api_field->vavid]);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Helper function for validating an element.
+ *
+ * @param $element
+ *   A form element's keyed array.
+ * @param &$form_state
+ *   The state of the form.
+ * @param $validation_api_field
+ *   The field-validator object.
+ * @param $validator
+ *   The validator object.
+ *
+ * @return
+ *   Nothing is returned.
+ */
+function _validation_api_run_validator($element, &$form_state, $validation_api_field, $validator) {
+  // Set the value depending on it's location
+  $value = (is_array($element['#value']) ? $element['#value']['value'] : $element['#value']);
+  // If the field is empty and the field is allowed be empty without running the validation, then you will skip the validation.
+  if (!(is_null($value) || $value == '') || !$validation_api_field->allow_empty) {
+    // Set up the arguments variable
+    $arguments = array();
+    if (isset($validator->arguments) && is_array($validator->arguments)) {
+      foreach ($validator->arguments as $vaaid => $argument) {
+        $arguments[$argument->delta] = $validation_api_field->arguments[$argument->delta]->value;
+      }
+    }
+
+    // Run the validation rule depending on the type.
+    switch ($validator->type) {
+      case 'php':
+        // Run the PHP code validation.
+        if (!eval($validator->rule)) {
+          $message = $validation_api_field->message;
+          // Set up the substitution strings for the message.
+          $substitutes['%field'] = $element['#name'];
+          if (count($arguments) > 0) {
+            foreach ($arguments as $delta => $argument) {
+              $substitutes['%arguments['. $delta .']'] = $argument;
+            }
+          }
+
+          if (isset($element['_error_element'])) {
+            form_set_error($element['_error_element']['#value'], t($message, $substitutes));
+          }
+          elseif (strpos($element['#name'], '[') !== FALSE) {
+            form_set_error(str_replace('[', '][', str_replace(']', '', $element['#name'])), t($message, $substitutes));
+          }
+          else {
+            form_set_error($element['#name'], t($message, $substitutes));
+          }
+        }
+      break;
+      case 'regex':
+        // Make argument change, if applicable, in regex code.
+        if (count($arguments) > 0) {
+          foreach ($arguments as $delta => $argument) {
+            $validator->rule = str_replace('%arguments['. $delta .']', $argument, $validator->rule);
+          }
+        }
+
+        // Run the regular expression validation.
+        if (!preg_match($validator->rule, $value)) {
+          $message = $validation_api_field->message;
+          // Set up the substitution strings for the message.
+          $substitutes['%field'] = $element['#name'];
+          if (count($arguments) > 0) {
+            foreach ($arguments as $delta => $argument) {
+              $substitutes['%arguments['. $delta .']'] = $argument;
+            }
+          }
+
+          if (isset($element['_error_element'])) {
+            form_set_error($element['_error_element']['#value'], t($message, $substitutes));
+          }
+          elseif (strpos($element['#name'], '[') !== FALSE) {
+            form_set_error(str_replace('[', '][', str_replace(']', '', $element['#name'])), t($message, $substitutes));
+          }
+          else {
+            form_set_error($element['#name'], t($message, $substitutes));
+          }
+        }
+      break;
+      default:
+        form_set_error($element['#name'], t('This field has a validating problem. Please contact the site administrator.'));
+      break;
+    }
+  }
+}
+
+/**
+ * This function is mainly used as an example for how to use hook_add_validator.
+ * Also, it lets people see how they can import this straight into their site.
+ * Implementation of hook_add_validator().
+ */
+function validation_api_add_validator() {
+  $validators[0]->name = 'length';
+  $validators[0]->type = 'regex';
+  $validators[0]->rule = '/^((.)|(\s)){%arguments[0],%arguments[1]}$/';
+  $validators[0]->message = '%field must be at least %arguments[0] and no more than %arguments[1] characters.';
+  $validators[0]->arguments[0]->name = 'Minimum Length';
+  $validators[0]->arguments[0]->description = 'Enter the minimum length of this field.';
+  $validators[0]->arguments[1]->name = 'Maximum Length';
+  $validators[0]->arguments[1]->description = 'Enter the maximum length of this field.';
+
+  return $validators;
+}

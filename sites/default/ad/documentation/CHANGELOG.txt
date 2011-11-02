@@ -1,0 +1,4 @@
+$Id: CHANGELOG.txt,v 1.2.2.40.2.176.2.1 2008/08/11 21:15:26 jeremy Exp $
+
+August 11th 2008
+Branched 6.x from 5.x-1.6

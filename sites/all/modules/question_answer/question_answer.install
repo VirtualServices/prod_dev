@@ -1,0 +1,23 @@
+<?php
+// $Id: question_answer.install,v 1.1.2.4 2010/10/28 09:23:22 jcisio Exp $
+
+/**
+ * @file
+ * Install
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function question_answer_install() {
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function question_answer_uninstall() {
+  // Delete our variables.
+  variable_del('question_answer_nodetype');
+  variable_del('question_answer_fieldtype');
+  variable_del('question_answer_duration');
+}

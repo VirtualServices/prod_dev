@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * @file
+ * Installation functions for cluetip.
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function cluetip_install() {
+  if (function_exists('jq_plugins')) {
+    jq_plugins('cluetip', FALSE, TRUE);
+  }
+}

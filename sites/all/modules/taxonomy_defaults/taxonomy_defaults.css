@@ -1,0 +1,12 @@
+/* $Id: taxonomy_defaults.css,v 1.1.6.1 2010/11/22 10:24:04 sleepcamel Exp $ */
+
+.taxdef-name {
+  padding:5px;
+  border:2px solid #CCC;
+  font-weight: bold;
+}
+
+.taxdef-subtable {
+  padding: 5px; 
+  border:2px solid #CCC;
+}

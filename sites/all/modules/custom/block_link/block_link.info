@@ -1,0 +1,9 @@
+name = Block Link
+description = Allows assigning links to Block Titles
+core = 6.x
+
+version = "6.x-1.0"
+core = "6.x"
+project = "block_link"
+datestamp = "1297268247"
+

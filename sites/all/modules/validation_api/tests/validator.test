@@ -1,0 +1,161 @@
+<?php
+// $Id: validator.test,v 1.1.2.5 2008/12/03 20:27:24 tapocol Exp $
+
+/**
+ * @file
+ */
+
+class ValidatorTestCase extends DrupalWebTestCase {
+  /**
+   * Implementation of getInfo().
+   */
+  function getInfo() {
+    return array(
+      'name' => t('Validator Management'),
+      'description' => t('Add, edit, delete, import, export, update and disconnect a validator'),
+      'group' => t('Validator'),
+    );
+  }
+
+  /**
+   * Implementation of setUp().
+   */
+  function setUp() {
+    parent::setUp('validation_api');
+
+    // Create and login user
+    $admin_user = $this->drupalCreateUser(array('administer validation fields', 'administer validators', 'administer php validators'));
+    $this->drupalLogin($admin_user);
+  }
+
+  /**
+   * Test creating a validator, editing it's rule, and deleting it.
+   */
+  function testValidator() {
+    // Add a new validator.
+    $add_input = array(
+      'name' => $this->randomName(8),
+      'type' => 'php',
+      'rule' => 'return TRUE;',
+      'message' => $this->randomName(32)
+    );
+    $this->drupalPost('admin/build/validation_api/validators/add', $add_input, t('Save Validator'));
+
+    // Make sure the form returned a successful message, and make sure it could be found in the database.
+    $this->assertText(t('New Validator Added'), t('Validator created successfully.'));
+    $vavid = db_result(db_query('SELECT vavid FROM {validation_api_validators} WHERE name = "%s"', $add_input['name']));
+    $this->assertTrue($vavid, t('Validator found in database.'));
+
+    // Edit the newly created validator.
+    $edit_input = $add_input;
+    //$edit_input['vavid'] = $vavid;
+    $edit_input['rule'] = 'return FALSE;';
+    $this->drupalPost('admin/build/validation_api/validators/edit/'. $vavid, $edit_input, t('Save Validator'));
+
+    // Make sure the form returned a successful message, and make sure the change showed up in the database.
+    $this->assertRaw(t('%name has been updated', array('%name' => $edit_input['name'])), t('Validator modified successfully.'));
+    $rule = db_result(db_query('SELECT rule FROM {validation_api_validators} WHERE vavid = %d', $vavid));
+    $this->assertEqual($rule, $edit_input['rule'], t('Validator rule change shown in database.'));
+
+    // Delete the newly created validator.
+    $this->drupalPost('admin/build/validation_api/validators/delete/'. $vavid, array(), t('Delete'));
+
+    // Make sure the form returned a successful message, and make sure the validator is gone in the database.
+    $this->assertRaw(t('%name was deleted', array('%name' => $edit_input['name'])), t('Validator deleted successfully.'));
+    $vavid = db_result(db_query('SELECT vavid FROM {validation_api_validators} WHERE vavid = %d', $vavid));
+    $this->assertFalse($vavid, t('Validator is gone in the database.'));
+  }
+
+  /**
+   * Test importing a validator from a hook, running an update on that validator and disconnecting the validator from the hook.
+   */
+  function testValidatorHookImport() {
+    // Import the validator.
+    $import_input = array(
+      'code' => '',
+      'validators[validation_api-0]' => 'validation_api-0'
+    );
+    $this->drupalPost('admin/build/validation_api/validators/import', $import_input, t('Import'));
+
+    // Make sure the form returned a successful message, and make sure it could be found in the database.
+    $this->assertRaw(t('Imported %name.', array('%name' => 'length')), t('Validator imported.'));
+    $vavid = db_result(db_query('SELECT vavid FROM {validation_api_validators} WHERE name = "length"'));
+    $this->assertTrue($vavid, t('Validator found in database.'));
+
+    // Make a change in the database, so you can test the update.
+    $original_message = db_result(db_query('SELECT message FROM {validation_api_validators} WHERE vavid = %d', $vavid));
+    db_query('UPDATE {validation_api_validators} SET message = "blank" WHERE vavid = %d', $vavid);
+    $message = db_result(db_query('SELECT message FROM {validation_api_validators} WHERE vavid = %d', $vavid));
+    $this->assertNotEqual($original_message, 'blank', t('Validator\'s message got changed in the database.'));
+
+    // Update the validator.
+    $this->drupalPost('admin/build/validation_api/validators/update/'. $vavid, array(), t('Update'));
+
+    // Make sure the form returned a successful message, and make sure it was updated to the hook.
+    $this->assertRaw(t('Updated %validator', array('%validator' => 'length')), t('Validator updated.'));
+    $message = db_result(db_query('SELECT message FROM {validation_api_validators} WHERE vavid = %d', $vavid));
+    $this->assertEqual($original_message, $message, t('Validator was updated back to the original message in the database.'));
+
+    // Disconnect the validator.
+    $this->drupalPost('admin/build/validation_api/validators/disconnect/'. $vavid, array(), t('Disconnect'));
+
+    // Make sure the form returned a successful message, and make sure it was disconnected from the hook.
+    $this->assertRaw(t('Disconnected %validator', array('%validator' => 'length')), t('Validator disconnected.'));
+    $module = db_result(db_query('SELECT module FROM {validation_api_validators} WHERE vavid = %d', $vavid));
+    $this->assertFalse($module, t('Validator\'s module field in the database is now empty (disconnected from hook).'));
+
+    // Delete the validator.
+    $this->drupalPost('admin/build/validation_api/validators/delete/'. $vavid, array(), t('Delete'));
+  }
+  
+  /**
+   * Test exporting a validator and re-importing the validator.
+   */
+  function testValidatorExportImport() {
+    // Get original validator from database.
+    $original_validator = db_fetch_object(db_query('SELECT * FROM {validation_api_validators} WHERE vavid = 1'));
+    $result = db_query('SELECT * FROM {validation_api_arguments} WHERE vavid = 1');
+    while ($obj = db_fetch_object($result)) {
+      $original_arguments[$obj->delta] = $obj;
+    }
+    
+    // Export the validator.
+    $export_input = array('validators[1]' => 1);
+    $this->drupalPost('admin/build/validation_api/validators/export', $export_input, t('Export'));
+    $this->assertRaw(t('Use the code filled in the Export Code text-area to import elsewhere.'), t('Validator exported.'));
+    
+    // Get the export code from the given page.
+    $raw_html = $this->drupalGetContent();
+    $textarea_html = '<textarea cols="60" rows="10" name="export_code" id="edit-export-code"  class="form-textarea resizable">';
+    $start_position = strpos($raw_html, $textarea_html) + strlen($textarea_html);
+    $export_code = html_entity_decode(substr($raw_html, $start_position, strpos($raw_html, '</textarea>', $start_position) - $start_position), ENT_QUOTES, 'UTF-8');
+    
+    // Delete the original validator.
+    db_query('DELETE FROM {validation_api_validators} WHERE vavid = 1');
+    db_query('DELETE FROM {validation_api_arguments} WHERE vavid = 1');
+    
+    // Import the export code.
+    $import_input = array(
+      'code' => $export_code
+    );
+    $this->drupalPost('admin/build/validation_api/validators/import', $import_input, t('Import'));
+
+    // Make sure the form returned a successful message, and make sure the original and new validators match.
+    $this->assertRaw(t('Imported %name.', array('%name' => $original_validator->name)), t('Original validator imported.'));
+    $new_validator = db_fetch_object(db_query('SELECT * FROM {validation_api_validators} WHERE name = "%s"', array($original_validator->name)));
+    // Need to force the vavids to match, since they are two separate inserts into the database.
+    $original_validator->vavid = $new_validator->vavid;
+    $this->assertClone($original_validator, $new_validator, t('The original validator and new validator match.'));
+    $result = db_query('SELECT * FROM {validation_api_arguments} WHERE vavid = %d', array($new_validator->vavid));
+    while ($obj = db_fetch_object($result)) {
+    echo "Record\n";
+      // Need to force the vaaids and vavids to match, since they are two separate inserts into the database.
+      $original_arguments[$obj->delta]->vaaid = $obj->vaaid;
+      $original_arguments[$obj->delta]->vavid = $obj->vavid;
+      $this->assertNotNull($original_arguments[$obj->delta], t('The original argument[!delta] was present in the original validator.', array('!delta' => $obj->delta)));
+      $this->assertClone($original_arguments[$obj->delta], $obj, array('The original argument[!delta] matches the new argument[%delta].', array('!delta' => $obj->delta)));
+      unset($original_arguments[$obj->delta]);
+    }
+    $this->assertTrue(count($original_arguments) == 0, t('All original arguments were accounted for.'));
+  }
+}

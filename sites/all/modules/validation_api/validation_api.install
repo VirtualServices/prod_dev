@@ -1,0 +1,180 @@
+<?php
+// $Id: validation_api.install,v 1.8.2.8 2008/09/30 17:40:29 tapocol Exp $
+
+/**
+ * @file
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function validation_api_schema() {
+  $schema['validation_api_validators'] = array(
+    'fields' => array(
+      'vavid' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'type' => array(
+        'type' => 'varchar',
+        'length' => 16,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'rule' => array(
+        'type' => 'text',
+        'not null' => TRUE,
+      ),
+      'message' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'module' => array(
+        'type' => 'varchar',
+        'length' => 32,
+        'default' => NULL,
+      ),
+      'delta' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('vavid'),
+    'unique keys' => array('name' => array('name')),
+  );
+
+  $schema['validation_api_fields'] = array(
+    'fields' => array(
+      'vafid' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'form_id' => array(
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+      ),
+      'form_field' => array(
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+      ),
+      'vavid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'allow_empty' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'message' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+    ),
+    'primary key' => array('vafid'),
+    'indexes' => array(
+      'va_form_id' => array('form_id'),
+      'va_form_field' => array('form_field'),
+    ),
+  );
+
+  $schema['validation_api_arguments'] = array(
+    'fields' => array(
+      'vaaid' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'vavid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'delta' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+      ),
+      'description' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+    ),
+    'primary key' => array('vaaid'),
+  );
+
+  $schema['validation_api_arguments_values'] = array(
+    'fields' => array(
+      'vafid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'vaaid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'value' => array(
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+      ),
+    ),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function validation_api_install() {
+  drupal_install_schema('validation_api');
+
+  // Set the weight to a big amount to have Validation API run it's hooks later then other modules.
+  db_query('UPDATE {system} SET weight = 50 WHERE name = "validation_api" AND type = "module"');
+  
+  // Install a couple basic validators.
+  $url_values = array('url', 'php', 'return valid_url($value, $arguments[0]);', '%field must be an absolute url address');
+  $email_values = array('email', 'php', 'return valid_email_address($value);', '%field must be in an email format.');
+  db_query('INSERT INTO {validation_api_validators} (name, type, rule, message) VALUES ("%s", "%s", "%s", "%s"), ("%s", "%s", "%s", "%s")', array_merge($url_values, $email_values));
+  $url_argument = array(db_last_insert_id('validation_api_validators', 'vavid'), 0, 'Absolute', 'Enter TRUE for an absolute URL and FALSE for a relative path.');
+  db_query('INSERT INTO {validation_api_arguments} (vavid, delta, name, description) VALUES (%d, %d, "%s", "%s")', $url_argument);
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function validation_api_uninstall() {
+  drupal_uninstall_schema('validation_api');
+
+  variable_del('validation_api_links');
+  variable_del('excluded_validation_fields');
+}

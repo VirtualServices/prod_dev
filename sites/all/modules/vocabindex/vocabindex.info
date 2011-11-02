@@ -1,0 +1,12 @@
+; $Id$
+name = Vocabulary Index
+description = "Easily browse through taxonomy. Display vocabularies like trees, a directory index or sort their terms alphabetically."
+core = 6.x
+dependencies[] = taxonomy
+php = 5
+; Information added by drupal.org packaging script on 2010-01-11
+version = "6.x-2.3"
+core = "6.x"
+project = "vocabindex"
+datestamp = "1263169508"
+

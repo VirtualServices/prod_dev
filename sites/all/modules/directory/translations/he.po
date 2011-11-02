@@ -1,0 +1,125 @@
+# LANGUAGE translation of Drupal (directory.module)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from file: directory.module,v 1.7 2006/10/21 15:30:37 inactivist
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2006-10-22 12:37+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: directory.module:21
+msgid "Create a directory of resources based on node metadata."
+msgstr "מדריך"
+
+#: directory.module:32;0
+msgid "directory"
+msgstr "מדריך"
+
+#: directory.module:33
+msgid "Advanced directory search"
+msgstr "חיפוש מתקדם"
+
+#: directory.module:34
+msgid "Random directory link"
+msgstr "קישור אקראי"
+
+#: directory.module:51
+msgid "none"
+msgstr "ללא"
+
+#: directory.module:63
+msgid "Which node types <em>should not</em> be listed in the directory"
+msgstr "אילו סוגי פריטים <em>לא</em> יוצגו במדריך"
+
+#: directory.module:72
+msgid "Which vocabularies should be displayed on the directory main page"
+msgstr "איזה מילון יוצג בעמוד הראשי של המדריך"
+
+#: directory.module:75
+msgid "The vocabularies that will visible at the root level of the directory page."
+msgstr "המילונים שיוצגו בעמוד המדריך"
+
+#: directory.module:81
+msgid "Resource count threshold to display subcategories"
+msgstr "סף הכמות הנדרש כדי להציג סיווגי משנה"
+
+#: directory.module:85
+msgid "If a category has fewer than this number of resources, the directory will try to display the resources available in subcategories."
+msgstr "אם לנושא יש פחות מכמות זו של משאבים, המדריך ינסה להציג את המשאבים הזמינים בנושא המשנה"
+
+#: directory.module:89
+msgid "Number of resources to display for each visible subcategory"
+msgstr "מספר המשאבים שיש להציג עבור כל נושא משני"
+
+#: directory.module:93
+msgid "If subcategories are visible, how many resources for each subcategory should be displayed?"
+msgstr "אם הנושא המשני אינו מוצג, כמה משאבים עבור כל נושא משני יש להציג"
+
+#: directory.module:97
+msgid "Explanation guidelines"
+msgstr "הנחיות שימוש"
+
+#: directory.module:101
+msgid "This text will be displayed at the top of the directory pages.  It is useful for helping or instructing your users."
+msgstr "טקסט זה יוצג בראש המדריך. זה יעיל כדי לעזור למשתמשים "
+
+#: directory.module:120
+msgid "<p>There are no resources to display in this category.</p>"
+msgstr "לא נמצאו משאבים להציג בנושא זה"
+
+#: directory.module:163
+msgid "Please only chose up to %tid_limit categories. Your other category selections have been discarded."
+msgstr "יש לבחור עד % קטגוריות. בחירות נוספות ימחקו"
+
+#: directory.module:195
+msgid "No items match your criteria."
+msgstr "לא נמצאו התאמות לחיפוש המבוקש"
+
+#: directory.module:198
+msgid "Many results were found so you may want to refine your criteria. Showing the first %limit of %num_results resources."
+msgstr "נמצאו התאמות רבות, כך שייתכן שברצונך למקד את החיפוש. מציג את %limit התוצאות הראשונות מתות %num_results."
+
+#: directory.module:334
+msgid "Subcategories of <em>%term-name</em>"
+msgstr "סיווגי משנה של <em>%term-name</em>"
+
+#: directory.module:370
+msgid "By <em>%vocabulary-name</em>"
+msgstr "לפי <em>%vocabulary-name</em>"
+
+#: directory.module:381
+msgid "Category"
+msgstr "נושא"
+
+#: directory.module:482
+msgid "General"
+msgstr "כללי"
+
+#: directory.module:548
+msgid "View all items in this category."
+msgstr "הצג את כל הפריטים בנושא"
+
+#: directory.module:559
+msgid "%limit of %num_nodes showing."
+msgstr ""
+
+#: directory.module:559
+msgid "View all."
+msgstr "הצג הכל"
+
+#: directory.module:573
+msgid "browse"
+msgstr "דפדף"
+
+#: directory.module:627
+msgid "Sort by:<br />"
+msgstr "מיין לפי"
+

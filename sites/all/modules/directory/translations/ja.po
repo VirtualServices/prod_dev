@@ -1,0 +1,148 @@
+# $Id: ja.po,v 1.1 2008/06/27 07:54:02 augustin Exp $
+# -----------------------------------------------------------------------------
+# Japanese translation of Drupal (directory.module)
+#
+# Copyright (c) 2006-2007  Drupal Japan  ( http://drupal.jp/ )  /
+#                          Drupal Nippon ( http://drupon.org/ ) /
+#                          Takafumi      ( jp.drupal@imagine **reverse order**)
+#
+# Generated from file:
+#  directory.module,v 1.11.2.21 2007/06/01 08:14:38 augustin
+#  directory.info,v 1.1.2.1 2007/05/17 10:19:40 augustin
+#
+# -----------------------------------------------------------------------------
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2007-06-01 23:22+0900\n"
+"Last-Translator: Takafumi <jp.drupal@imagine **reverse order**>\n"
+"Language-Team: Drupal Japan / Drupal Nippon\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: directory.module:31;0 directory.info:0
+msgid "directory"
+msgstr "ディレクトリ"
+
+#: directory.module:37
+msgid "Advanced directory search"
+msgstr "高度なディレクトリ検索"
+
+#: directory.module:44
+msgid "Random directory link"
+msgstr "ランダムディレクトリリンク"
+
+#: directory.module:51
+msgid "Directory Settings"
+msgstr "ディレクトリの設定"
+
+#: directory.module:52
+msgid "Set which node types and which vocabularies to include, the depth to display on the directory page, etc."
+msgstr "リストに含めるノードタイプやボキャブラリ、ディレクトリページに表示する深度などを設定します。"
+
+# ----------
+#: directory.module:74
+msgid "none"
+msgstr "無し"
+
+#: directory.module:96
+msgid "<em><strong>Exclude</strong></em> these node types from directory pages"
+msgstr "ディレクトリページから<strong>除外する</strong>ノードタイプ"
+
+#: directory.module:99
+msgid "<em><strong>Please note:</strong> Any node types that are checked here will <strong>NOT be included</strong> in the directory listings.  All other types will be included.</em>"
+msgstr "ディレクトリページから除外するノードタイプを指定してください。 チェックを入れられたノードタイプはディレクトリリストに<strong>含められず</strong>、それ以外のすべてのタイプが含められます。"
+
+#: directory.module:104
+msgid "Which vocabularies should be displayed on the directory main page"
+msgstr "ディレクトリのメインページに表示するボキャブラリ"
+
+#: directory.module:107
+msgid "The vocabularies that will visible at the root level of the directory page."
+msgstr "ディレクトリページの最上位で表示したい、ボキャブラリを指定してください。"
+
+#: directory.module:113
+msgid "Show count of nodes in categories"
+msgstr "カテゴリ内にノード数を表示する"
+
+#: directory.module:115
+msgid "Append a count of items contained in each term, if the count is greater than zero."
+msgstr "各分類用語内に含まれるアイテム数を付加するかどうかを指定してください。 チェックを入れると、アイテム数が 0 より大きい場合に表示します。"
+
+#: directory.module:120
+msgid "Hide terms with no content"
+msgstr "コンテンツのない分類用語を非表示にする"
+
+#: directory.module:122
+msgid "If checked, hide taxonomy terms having no node content."
+msgstr "コンテンツのない分類用語を隠したい場合、ここにチェックを入れてください。"
+
+#: directory.module:127
+msgid "Help text for the Directory home"
+msgstr "ディレクトリホームのヘルプテキスト"
+
+#: directory.module:131
+msgid "This text will be displayed at the top of <strong>the main directory page</strong>.  It is useful for helping or instructing your users."
+msgstr "<strong>ディレクトリのメインページ</strong>に記載したいテキストを記入してください。 このテキストは最上部に表示され、ユーザの手助けをしたり、なんらかの指示をすることに役立ちます。"
+
+#: directory.module:136
+msgid "Help text for each Directory term page"
+msgstr "各ディレクトリタームページのヘルプテキスト"
+
+#: directory.module:140
+msgid "This text will be displayed at the top of <strong>each directory term page</strong>.  It is useful for helping or instructing your users."
+msgstr "<strong>ディレクトリの各タームページ</strong>に記載したいテキストを記入してください。 このテキストは最上部に表示され、ユーザの手助けをしたり、なんらかの指示をすることに役立ちます。"
+
+#: directory.module:161
+msgid "<p class=\"directory-no-resources-available\">There are no items in this category.  Please choose another.</p>"
+msgstr "<p class=\"directory-no-resources-available\">このカテゴリには項目がありません。 別のカテゴリを選んでください。</p>"
+
+#: directory.module:211
+msgid "Please only chose up to %tid_limit categories. Your other category selections have been discarded."
+msgstr "選択できるのは %tid_limit までです。 他のカテゴリの選択は破棄されました。"
+
+#: directory.module:243
+msgid "No items match your criteria."
+msgstr "基準に一致する項目はありません。"
+
+#: directory.module:246
+msgid "Many results were found so you may want to refine your criteria. Showing the first %limit of %num_results resources."
+msgstr "多数の結果が見つかりましたので、もう基準を少し絞り込んだ方がよいでしょう。 %num_results リソース中 %limit 件を表示しています。"
+
+#: directory.module:371
+msgid "By <em>%vocabulary-name</em>"
+msgstr "<em>%vocabulary-name</em>"
+
+#: directory.module:481
+msgid "General"
+msgstr "全般"
+
+#: directory.module:530
+msgid "Sub-categories"
+msgstr "サブカテゴリ"
+
+#: directory.module:659
+msgid "%limit of %num_nodes showing in <span class=\"directory-term-name\">\"%term\"</span>."
+msgstr "<span class=\"directory-term-name\">\"%term\"</span> 内の %num_nodes 項目中 %limit を表示しています。"
+
+#: directory.module:659
+msgid "View all items."
+msgstr "すべての項目を表示。"
+
+#: directory.module:673
+msgid "browse"
+msgstr "ブラウズ"
+
+#: directory.module:727
+msgid "Sort by:<br />"
+msgstr "並び替え：<br />"
+
+#: directory.info:0
+msgid "Directory"
+msgstr "ディレクトリ"
+
+#: directory.info:0
+msgid "Create a directory of resources based on taxonomy."
+msgstr "タクソノミーに基づいてリソースのディレクトリを作成します。"
+

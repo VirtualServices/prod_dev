@@ -1,0 +1,100 @@
+<?php
+// $Id: ssi.module,v 1.3 2008/08/04 07:15:27 deciphered Exp $
+
+/**
+ * @file
+ * Allows Drupal content to be accessed externally via SSI
+ */
+
+/**
+ * Implementation of hook_perm().
+ */
+function ssi_perm() {
+  return array('view ssi');
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function ssi_menu() {
+  $items = array();
+
+  $items['ssi/block'] = array(
+    'title' => 'SSI Block',
+    'page callback' => 'ssi_display_blocks',
+    'page arguments' => array('block'),
+    'access arguments' => array('view ssi'),
+    'type' => MENU_CALLBACK
+  );
+
+  $items['ssi/region'] = array(
+    'title' => 'SSI Region',
+    'page callback' => 'ssi_display_blocks',
+    'page arguments' => array('region'),
+    'access arguments' => array('view ssi'),
+    'type' => MENU_CALLBACK
+  );
+
+  $items['ssi/node/%'] = array(
+    'title' => 'SSI Node',
+    'page callback' => 'ssi_display_node',
+    'page arguments' => array(2),
+    'access arguments' => array('view ssi'),
+    'type' => MENU_CALLBACK
+  );
+
+  $items['ssi/node/%/teaser'] = array(
+    'title' => 'SSI Node - Teaser',
+    'page callback' => 'ssi_display_node',
+    'page arguments' => array(2, TRUE),
+    'access arguments' => array('view ssi'),
+    'type' => MENU_CALLBACK
+  );
+
+  return $items;
+}
+
+/**
+ * Output Blocks for SSI
+ */
+function ssi_display_blocks($type) {
+  $output = '';
+
+  if ($type == 'block' && arg(2) && arg(3)) {
+    $blocks[arg(2) .'_'. arg(3)] = (object) module_invoke(arg(2), 'block', 'view', arg(3));
+  }
+  else if ($type == 'region' && arg(2)) {
+    init_theme();
+    $blocks = block_list(arg(2));
+  }
+
+  if (count($blocks) >= 1) {
+    foreach ($blocks as $block) {
+    if ($block->content) {
+        $output .= theme('block', $block);
+      }
+    }
+  }
+
+  print $output;
+  exit;
+}
+
+/**
+ * Output Node for SSI
+ */
+function ssi_display_node($nid, $teaser = FALSE) {
+  $output = '';
+
+  if (is_numeric($nid)) {
+    $node = node_load($nid);
+    // TODO: Add support for CCK Fields
+
+    $page = ($teaser == FALSE) ? 1 : 0;
+
+    $output = theme('node', $node, $teaser, $page);
+  }
+
+  print $output;
+  exit;
+}

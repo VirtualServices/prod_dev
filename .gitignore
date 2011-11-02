@@ -1,0 +1,9 @@
+
+## Files to ignore##
+sites/*/files
+phpMyAdmin/
+webalizer/
+cache/
+cache/*
+sites/*/settings.php
+

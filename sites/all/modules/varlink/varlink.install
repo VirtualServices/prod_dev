@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * Implementation of hook_install().
+ */
+function varlink_install() {
+  drupal_load('module', 'content');
+  content_notify('install', 'varlink');
+}
+
+/**
+* Implementation of hook_uninstall().
+*/
+function varlink_uninstall() {
+  drupal_load('module', 'content');
+  content_notify('uninstall', 'varlink');
+}
+
+/**
+* Implementation of hook_enable().
+*/
+function varlink_enable() {
+  drupal_load('module', 'content');
+  content_notify('enable', 'varlink');
+}
+
+/**
+* Implementation of hook_disable().
+*/
+function varlink_disable() {
+  drupal_load('module', 'content');
+  content_notify('disable', 'varlink');
+}
+
+/**
+ * Implementation of hook_update_last_removed().
+ */
+function varlink_update_last_removed() {
+  return 1;
+}

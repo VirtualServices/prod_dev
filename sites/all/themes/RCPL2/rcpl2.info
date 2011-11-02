@@ -1,0 +1,20 @@
+name = RCPL2
+description = Modified by Scottie Claiborne.
+version = 6.1
+core = 6.x
+engine = phptemplate
+
+version = "6.1"
+project = "drupal"
+datestamp = "1202913006"
+
+php = DRUPAL_MINIMUM_PHP
+
+regions[headerimage] = Header Image
+regions[left] = Left sidebar
+regions[right] = Right sidebar
+regions[content] = Content
+regions[footer] = Footer
+regions[welcome] = Welcome
+regions[feature] = Feature Block
+

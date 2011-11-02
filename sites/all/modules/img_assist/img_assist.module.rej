@@ -1,0 +1,178 @@
+*************** function img_assist_filter($op, $delta =
+*** 219,225 ****
+      
+      case 'description':
+        return t('Add images to your posts with Image assist.');
+-     
+      case 'process':
+        $processed = FALSE;
+        foreach (img_assist_get_macros($text) as $unexpanded_macro => $macro) {
+--- 219,228 ----
+      
+      case 'description':
+        return t('Add images to your posts with Image assist.');
++ 
++ //    case 'no cache':
++ //      return TRUE;
++ 
+      case 'process':
+        $processed = FALSE;
+        foreach (img_assist_get_macros($text) as $unexpanded_macro => $macro) {
+*************** function img_assist_render_image($attrib
+*** 1115,1124 ****
+    
+    if ($attributes['nid']) {
+      $node = node_load($attributes['nid']);
+-     
+-     // Get size.
+-     $width  = $attributes['width'];
+-     $height = $attributes['height'];
+      if ($width || $height) {
+        // Check to ensure that the dimensions don't exceed the max set in the
+        // img_assist settings.
+--- 1118,1128 ----
+    
+    if ($attributes['nid']) {
+      $node = node_load($attributes['nid']);
++ 
++     // Get image size.
++     $width  = (int) $attributes['width'];
++     $height = (int) $attributes['height'];
++     $default_sizes = image_get_sizes();
+      if ($width || $height) {
+        // Check to ensure that the dimensions don't exceed the max set in the
+        // img_assist settings.
+*************** function img_assist_render_image($attrib
+*** 1145,1177 ****
+            
+            // Get new width and height for this inline image.
+            // If height is either left out or larger than width then
+-           // width is the controlling factor.
+-           if (!$height || round($width / $aspect_ratio) <= $height) {
+              $height = round($width / $aspect_ratio);
+            }
+            // Else, width is either left out or larger than height so
+-           // height is controlling factor.
+            else {
+              $width = round($height * $aspect_ratio);
+            }
+-           
+-           // Compare new width and height to existing image derivative sizes.
+            $diag_size_new = sqrt(pow($width, 2) + pow($height, 2));
+            $closest_difference = 9999;
+-           
+-           foreach (image_get_sizes() as $key => $stdsize) {
+              $width_std = $stdsize['width'];
+              $height_std = $stdsize['height'];
+-             // Get default width and height, taking the aspect ratio into account.
+-             if (round($width_std / $aspect_ratio) <= $height_std) {
+-               // Width is controlling factor.
+                $height_std = round($width_std / $aspect_ratio);
+              }
+              else {
+-               // Height is controlling factor.
+                $width_std = round($height_std * $aspect_ratio);
+              }
+-             // Get the diagonal size of this standard image.
+              $diag_size_std = sqrt(pow($width_std, 2) + pow($height_std, 2));
+              $difference = abs($diag_size_new - $diag_size_std);
+              if ($difference < $closest_difference) {
+--- 1149,1199 ----
+            
+            // Get new width and height for this inline image.
+            // If height is either left out or larger than width then
++           // Width is controlling factor.
++           if (!$height || ($width && round($width / $aspect_ratio) <= $height)) {
+              $height = round($width / $aspect_ratio);
+            }
+            // Else, width is either left out or larger than height so
++           // Height is controlling factor.
+            else {
+              $width = round($height * $aspect_ratio);
+            }
++ 
++           // Find out whether the given width/height is the same as (or extremely
++           // close to) a default image derivative size; if so, we will use the
++           // default size instead of generating a custom image.
+            $diag_size_new = sqrt(pow($width, 2) + pow($height, 2));
+            $closest_difference = 9999;
++ 
++           foreach ($default_sizes as $key => $stdsize) {
+              $width_std = $stdsize['width'];
+              $height_std = $stdsize['height'];
++             // Diagonal size calculations require a width or height.
++             if (!$height_std && !$width_std) {
++               // For the original image, we can fall back to actual dimensions
++               // though. In fact, IMAGE_ORIGINAL can either have maximum
++               // dimensions (so aspect ratio based calculations below will apply)
++               // or the real dimensions (which must be considered as valid
++               // "derivative size").
++               // Note that this annuls the 'use original size' user permission.
++               if ($key !== IMAGE_ORIGINAL) {
++                 continue;
++               }
++               else {
++                 $width_std = $original_size['width'];
++                 $height_std = $original_size['height'];
++               }
++             }
++             // Calculate default width and height based on aspect ratio.
++             // Width is controlling factor.
++             if (!$height_std && ($width_std && round($width_std / $aspect_ratio) <= $height_std)) {
+                $height_std = round($width_std / $aspect_ratio);
+              }
++             // Height is controlling factor.
+              else {
+                $width_std = round($height_std * $aspect_ratio);
+              }
++             // Calculate diagonal size of this default size.
+              $diag_size_std = sqrt(pow($width_std, 2) + pow($height_std, 2));
+              $difference = abs($diag_size_new - $diag_size_std);
+              if ($difference < $closest_difference) {
+*************** function img_assist_render_image($attrib
+*** 1179,1188 ****
+                $closest_difference = $difference;
+              }
+            }
+-           
+-           // Find out if desired width/height is the same (or extremely close)
+-           // to the size of a default image derivative; if so, we will use the
+-           // default size image instead of generating our own image.
+            if ($closest_difference < 3) {
+              $create_custom = FALSE;
+            }
+--- 1201,1212 ----
+                $closest_difference = $difference;
+              }
+            }
++           // If, for any reason, no default image derivative size has a width or
++           // height, fall back to IMAGE_THUMBNAIL.
++           if (!isset($closest_std_size)) {
++             $closest_std_size = IMAGE_THUMBNAIL;
++           }
++ 
+            if ($closest_difference < 3) {
+              $create_custom = FALSE;
+            }
+*************** function img_assist_render_image($attrib
+*** 1228,1237 ****
+          $size['key'] = $closest_std_size;
+        }
+      }
+-     // Default to thumbnail if width and/or height is missing.
+      else {
+-       $size        = image_get_sizes();
+-       $size        = $size[IMAGE_THUMBNAIL];
+        $size['key'] = IMAGE_THUMBNAIL;
+      }
+  
+--- 1252,1260 ----
+          $size['key'] = $closest_std_size;
+        }
+      }
++     // Default to thumbnail if width and height is missing.
+      else {
++       $size = $default_sizes[IMAGE_THUMBNAIL];
+        $size['key'] = IMAGE_THUMBNAIL;
+      }
+  
