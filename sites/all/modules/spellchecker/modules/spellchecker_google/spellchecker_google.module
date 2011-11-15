@@ -1,0 +1,34 @@
+<?php
+// $Id: spellchecker_google.module,v 1.1 2010/12/15 16:31:20 kenorb Exp $
+
+/**
+ * @file
+ * @brief
+ * Implements Spell Checker for Drupal
+ *
+ * @package 	spellchecker
+ * @subpackage
+ * @author
+ */
+
+define("GOOGLE_SPELL_URL", "https://www.google.com/tbproxy/spell");
+
+/** 
+ * Implementation of hook_spellchecker 
+ */ 
+function spellchecker_google_spellchecker() {
+    $name  = 'google';
+    $config['module'][$name] = 'spellchecker_google';
+
+    /* engine settings */
+    $config['engine'][$name]['callback'] = 'spellchecker_google_op';
+    $config['engine'][$name]['file'] = $config['module'][$name] . '.inc';
+    $config['engine'][$name]['description'] = t('Use Google library.');
+
+    /* setting form */
+    $config['settings'][$name]['callback'] = 'spellchecker_google_get_admin_form';
+    $config['settings'][$name]['file'] = $config['module'][$name] . '.admin.inc';
+    $config['settings'][$name]['description'] = t('Google Spell Checker configuration.');
+    return $config;
+}
+

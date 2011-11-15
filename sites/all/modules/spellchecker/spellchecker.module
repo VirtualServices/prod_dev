@@ -1,0 +1,337 @@
+<?php
+// $Id: spellchecker.module,v 1.1 2010/12/15 15:55:58 kenorb Exp $
+
+/**
+ * @file
+ * @brief
+ * Implements Spell Checker for Drupal
+ *
+ * @package 	spellchecker
+ * @subpackage
+ * @author
+ */
+
+/* Formats for spellchecker ajax callback */
+define('SPELLCHECKER_ARRAY_FORMAT', 1);
+define('SPELLCHECKER_JSON_FORMAT', 2);
+define('SPELLCHECKER_XML_FORMAT', 3);
+
+define('SPELLCHECKER_SEPARATORS', '\\s!"#\$%&\(\)\*\+,-\.\/:;<=>\?@\^\_\{\|\}');
+
+/**
+ * Implementation of hook_init
+ */
+function spellchecker_init() {
+/* Test code:
+    module_load_include('inc', 'spellchecker');
+    $new_word = spellchecker_add_new_word('houe');
+    $check = spellchecker_check('houe');
+    var_dump($check); exit;
+*/
+}
+
+/**
+ * Implementation of hook_menu
+ *
+ */
+function spellchecker_menu() {
+
+    $items['admin/settings/spellchecker'] = array(
+        'title' => 'Spell Checker',
+        'description' => 'Configure Spell Checker.',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('spellchecker_get_admin_form'),
+        'access arguments' => array('administer spellchecker'),
+        'file' => 'spellchecker.admin.inc',
+    );
+
+    $items['admin/settings/spellchecker/general'] = array(
+        'title' => 'General',
+        'type' => MENU_DEFAULT_LOCAL_TASK,
+    );
+
+    /* load setting forms for all active engines */
+    if ($config = module_invoke_all('spellchecker')) {
+      foreach ($config['settings'] as $engine => $sett) {
+          $items['admin/settings/spellchecker/' . $engine] = array(
+              'title' => $engine,
+              'description' => $sett['description'],
+              'page callback' => 'drupal_get_form',
+              'page arguments' => array($sett['callback']),
+              'access arguments' => array('administer spellchecker'),
+              'file' => $sett['file'],
+              'file path' => drupal_get_path('module', $config['module'][$engine]),
+              'type' => MENU_LOCAL_TASK,
+          );
+      };
+    } else {
+      /* If you see the error, please activate at least one spell checker engine module */
+    }
+
+    $items['spellchecker'] = array(
+        'title' => 'Spell Checker callback',
+        'page callback' => 'spellchecker_ajax_callback',
+        'access arguments' => array('access spellchecker'),
+        'file' => 'spellchecker.inc',
+        'type' => MENU_CALLBACK,
+    );
+
+    $items['spellchecker_wysiwyg'] = array(
+        'title' => 'Spell Checker WYSIWYG callback',
+        'page callback' => 'spellchecker_ajax_wysiwyg_callback',
+        'access arguments' => array('access spellchecker'),
+        'file' => 'spellchecker.inc',
+        'type' => MENU_CALLBACK,
+    );
+
+    $items['spellchecker/%'] = array(
+        'title' => 'Spell Checker word operation callback',
+        'page callback' => 'spellchecker_ajax_op_callback',
+        'access arguments' => array('access spellchecker'),
+        'file' => 'spellchecker.inc',
+        'type' => MENU_CALLBACK,
+    );
+
+    return $items;
+}
+
+/**
+ * Implementation of hook_perm
+ */
+function spellchecker_perm() {
+    return array('administer spellchecker', 'access spellchecker', 'add new words', 'remove words');
+}
+
+/**
+ * Implementation of hook_nodeapi().
+ */
+/*
+function spellchecker_nodeapi(&$node, $op) {
+  if ($op == 'alter' && isset($node->preview)) {
+    module_load_include('inc', 'spellchecker');
+    if ($highlighted = spellcheck_node($node->content['body']['#value'], $node->language)) {
+      drupal_add_css(drupal_get_path('module', 'spellcheck') . '/css/spellcheck.css');
+      $node->body = $highlighted;
+    }
+  }
+}
+*/
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function spellchecker_form_alter(&$form, $form_state, $form_id) {
+  if (strpos($form_id, '_node_form') !== FALSE && user_access('access spellchecker')) {
+    $content_type = str_replace('_node_form', '', $form_id); // convert name to plain content type name
+    if (variable_get('spellchecker_node_title_' . $content_type, FALSE) || variable_get('spellchecker_node_body_' . $content_type, FALSE)) {
+      $form['#validate'][] = 'spellchecker_validate';
+    }
+
+    $form['#after_build'][] = 'spellchecker_process_form';
+  }
+}
+
+/**
+ * Implementation of #after_build callback
+ *  - identifying the fields to json
+ */
+function spellchecker_process_form($form, &$form_state) {
+    static $form_id = array();
+
+    $content_type = $form['type']['#value']; // or? $content_type = $form['#node_type']->type;
+    $fields = array();
+    variable_get('spellchecker_node_title_' . $content_type, FALSE) ? $fields[] = 'edit-title' : NULL;
+    variable_get('spellchecker_node_body_' . $content_type, FALSE) ? $fields[] = 'edit-body' : NULL;
+    variable_get('spellchecker_node_teaser_' . $content_type, FALSE) ? $fields[] = 'edit-teaser' : NULL;
+    $en_fields = array_flip(variable_get('spellchecker_fields', array())); // return list of fields for spellchecker
+    if (!empty($fields) || !empty($en_fields)) {
+        $fid = md5(serialize($settings)); // determine a form_id
+        if (!isset($form_id[$fid])) {
+            module_load_include('inc', 'spellchecker'); // used for spellchecker_lang()
+
+            foreach ($en_fields as $field_name) {
+              $fields[] = spellchecker_get_id_of_field($form, $field_name);
+            }
+            drupal_add_js(drupal_get_path('module', 'spellchecker') . '/jquery-spellcheck/jquery.spellcheck.js');
+            drupal_add_js(drupal_get_path('module', 'spellchecker') . '/spellchecker.js');
+            drupal_add_css(drupal_get_path('module', 'spellchecker') . '/spellchecker.css');
+            $json = json_encode(drupal_map_assoc($fields));
+            drupal_add_js(
+                array(
+                    'spellchecker' => array(
+                        $fid => array(
+                            'timeout' => variable_get('spellchecker_ajax_timeout', 500),
+                            'jsonstr' => $json,
+                            'basepath' => base_path(),
+                            'lang' => variable_get('spellchecker_pspell_default_language', PSPELL_DEFAULT_LANGUAGE),
+                            'ignorecaps' => (int)!variable_get('spellchecker_case_sensitive', TRUE),
+                            'ignoredigits' => (int)variable_get('spellchecker_ignoredigits', TRUE),
+                        ),
+                    ),
+                ),
+                'setting'
+            );
+            $form_id[$fid] = TRUE;
+        }
+    }
+    return $form;
+}
+
+/**
+ * Form validate callback.
+ */
+function spellchecker_validate($form, &$form_state) {
+  if (variable_get('spellchecker_show_warning', TRUE)) {
+    switch ($form['#id']) {
+        case 'node-form':
+            $op = $form['nid']['#post']['op'];
+            switch ($op) {
+                case t('Delete'):
+                    /* do nothing */
+                break;
+                case t('Save'):
+                case t('Preview'):
+                default:
+                    $content_type = $form_state['values']['type'];
+                    if (variable_get('spellchecker_node_title_' . $content_type, FALSE)) {
+                        $fields['title'] = $form_state['values']['title'];
+                    }
+                    if (variable_get('spellchecker_node_body_' . $content_type, FALSE)) {
+                        $fields['body'] = spellchecker_filter($form_state['values']['body']);
+                    }
+                    if (variable_get('spellchecker_node_teaser_' . $content_type, FALSE)) {
+                        $fields['teaser'] = $form_state['values']['teaser'];
+                    }
+                    $cck_fields = variable_get('spellchecker_fields', array());
+                    foreach ($cck_fields as $key => $value) {
+                        $fields[$key] = $form_state['values'][$key];
+                    }
+
+                    $ignore_digits = variable_get('spellchecker_ignoredigits', TRUE) ? '[0-9]|' : '';
+                    foreach ($fields as $key => $field) {
+                      $fields[$key] = preg_replace('/(' . $ignore_digits . '[' . SPELLCHECKER_SEPARATORS . '])/', ' ', $field);
+                    }
+
+                    drupal_set_message(spellchecker_confirm($fields), 'error');
+                break;
+            }
+        break;
+    }
+  }
+}
+
+
+/**
+ * Implementation of hook_form_FORM_ID_alter().
+ */
+function spellchecker_form_node_type_form_alter(&$form, &$form_state) {
+  $form['submission']['spellchecker_node_title'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable spelling for %field field.', array('%field' => t('title'))),
+    '#default_value' => variable_get('spellchecker_node_title_' . $form['#node_type']->type, FALSE),
+  );
+  $form['submission']['spellchecker_node_body'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable spelling for %field field.', array('%field' => t('body'))),
+    '#default_value' => variable_get('spellchecker_node_body_' . $form['#node_type']->type, FALSE),
+  );
+  if (module_exists('excerpt')) {
+      $form['submission']['spellchecker_node_teaser'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Enable spelling for %field field.', array('%field' => t('teaser'))),
+        '#default_value' => variable_get('spellchecker_node_teaser_' . $form['#node_type']->type, FALSE),
+      );
+  }
+}
+
+/**
+ * Implementation of hook_form-FORM-ID_alter().
+ */
+function spellchecker_form_content_field_edit_form_alter(&$form, $form_state) {
+  $settings = variable_get('spellchecker_fields', array());
+  if (module_exists('content')) {
+    $field_name = $form['#field']['field_name'];
+    $form['widget']['spellchecker_enabled'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Enable Spell Checker for this field.'),
+      '#default_value' => $settings[$field_name] ? $settings[$field_name] : array(),
+      '#required' => FALSE,
+      // '#disabled' => TRUE, // or hidden?
+        /* TODO:
+            Check if specified field can be spell checked (textarea, input).
+            We can check it by pre-renderind the field and check for html form elements?
+        */
+    );
+
+
+    $form['#submit'][] = 'spellchecker_field_submit';
+  }
+}
+
+/**
+ * Submit form_alter callback
+ */
+function spellchecker_field_submit($form, $form_state) {
+  /* init variables */
+  $field_name = $form['#field']['field_name'];
+  $value = $form['type']['#post']['spellchecker_enabled'];
+
+  /* retrieve existing configuration */
+  $settings = variable_get('spellchecker_fields', array());
+  if (isset($field_name)) {
+    /* save new configuration */
+    if ($value) {
+      $settings[$field_name] = (int)$form['type']['#post']['spellchecker_enabled'];
+    } else {
+      unset($settings[$field_name]);
+    }
+    variable_set('spellchecker_fields', $settings); // merge variable
+  }
+}
+
+/**
+ * Implementation of hook_theme()
+ * @return array
+ */
+function spellchecker_theme() {
+    return array(
+        'spellchecker_node_string_highlight' => array(
+            'file' => 'spellchecker.theme.inc',
+            'arguments' => array(
+            'string' => '',
+            'suggestions' => array(),
+            ),
+        ),
+    );
+}
+
+/**
+ * Implementation of hook_spellchecker
+ */
+function spellchecker_spellchecker() {
+    $name = 'spellchecker';
+    $config['module'][$name] = 'spellchecker';
+
+    /* storage settings */
+    $config['storage'][$name]['callback'] = 'spellchecker_taxonomy_storage';
+    $config['storage'][$name]['file'] = $config['module'][$name] . '.taxonomy.inc';
+    $config['storage'][$name]['description'] = t('Use Taxonomy for wordlist storage.');
+    return $config;
+}
+
+/**
+ * Implementation of hook_editor_settings alter
+ */
+function spellchecker_wysiwyg_editor_settings_alter(&$settings, &$context) {
+  if($context['profile']->editor == 'tinymce') {
+    global $language;
+    $settings['spellchecker_rpc_url'] = base_path() . 'spellchecker_wysiwyg';
+    $settings['spellchecker_enable_learn_rpc'] = TRUE; // Activate 'Add to dictionary' option
+    $settings['spellchecker_report_no_misspellings'] = FALSE;
+    $settings['spellchecker_word_separator_chars'] = SPELLCHECKER_SEPARATORS; // Word separator regex
+    $settings['spellchecker_languages'] = '+' . $language->name . '=' . $language->language; /* TODO: add the list of all activated languages in Drupal */
+    // $settings['spellchecker_languages'] = '+English=en,Danish=da,Dutch=nl,Finnish=fi,French=fr,German=de,Italian=it,Polish=pl,Portuguese=pt,Spanish=es,Swedish=sv';
+    // Other spellchecker variables: spellchecker_word_pattern, spellchecker_enable_ignore_rpc
+  }
+}
+

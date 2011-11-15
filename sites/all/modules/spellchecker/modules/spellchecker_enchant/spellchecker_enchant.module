@@ -1,0 +1,52 @@
+<?php
+// $Id: spellchecker_enchant.module,v 1.1 2010/12/15 16:31:20 kenorb Exp $
+
+/**
+ * @file
+ * @brief
+ * Implements Enchant spelling library for Spell Checker
+ *
+ * @package 	spellchecker
+ * @subpackage
+ * @author    Rafal Wieczorek
+ */
+
+/**
+ * Implementation of hook_spellchecker
+ */
+function spellchecker_enchant_spellchecker() {
+    $name = 'enchant';
+    $config['module'][$name] = 'spellchecker_enchant';
+
+    /* engine settings */
+    $config['engine'][$name]['callback'] = 'spellchecker_enchant_op';
+    $config['engine'][$name]['file'] = $config['module'][$name] . '.inc';
+    $config['engine'][$name]['description'] = t('Use Enchant library.');
+
+    /* setting form */
+/* Note: enable if necessary
+    $config['settings'][$name]['callback'] = 'spellchecker_enchant_get_admin_form';
+    $config['settings'][$name]['file'] = $config['module'][$name] . '.admin.inc';
+    $config['settings'][$name]['description'] = t('Enchant Spell Checker configuration.');
+*/
+
+    return $config;
+}
+
+/**
+ * Implementation of hook_spellchecker_op
+ */
+function spellchecker_enchant_spellchecker_op($op, $word) {
+    $mode = variable_get('spellchecker_mode', module_exists('spellchecker_google') ? 'google' : NULL);
+    if ($mode == 'enchant') {
+        module_load_include('inc', 'spellchecker_enchant');
+        switch ($op) {
+            case 'add':
+                spellchecker_enchant_add_new_word($word);
+            break;
+            case 'remove':
+            break;
+        }
+    }
+}
+

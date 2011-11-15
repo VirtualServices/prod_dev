@@ -1,0 +1,11 @@
+; $Id: spellchecker.info,v 1.1 2010/12/15 15:55:58 kenorb Exp $
+name = Spell Checker
+description = Implements Spellchecker for nodes
+core = 6.x
+
+; Information added by drupal.org packaging script on 2010-12-16
+version = "6.x-1.0"
+core = "6.x"
+project = "spellchecker"
+datestamp = "1292513528"
+

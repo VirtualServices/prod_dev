@@ -1,0 +1,37 @@
+#spellcheckresults {
+	background: #fff;
+	border: 1px solid #ddd;
+  font-size: small;
+  padding: 5px;
+  position: absolute;
+  z-index: 99;
+}
+#spellcheckresults input, textarea {width: 250px;}
+#spellcheckresults textarea {height: 100px;}
+#spellcheckresults dl {
+	clear: both;
+	margin: 0;
+	padding: 5px 0 0;
+}
+#spellcheckresults dl dt {
+	float: left;
+	clear: left;
+	margin: 3px 0;
+	padding: 0;
+	font-weight: bold;
+}
+#spellcheckresults dl dd {
+	float: left;
+	margin: 3px 10px;
+	padding: 0;
+	cursor: pointer;
+	color: green;
+}
+#spellcheckresults dl dd.ignore { color: red; font-style: italic; }
+#spellcheckresults dl dd.add { color: red; font-style: italic; font-weight:bold; }
+
+
+a.checkspelling img { margin: 0 5px; border: 0; }
+#spellcheckresults a.close-link {
+  float: right;
+}

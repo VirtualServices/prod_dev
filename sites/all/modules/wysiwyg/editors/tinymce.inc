@@ -514,7 +514,7 @@ function wysiwyg_tinymce_plugins($editor) {
       'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/preview',
       'internal' => TRUE,
       'load' => TRUE,
-    ),
+   ),
     'print' => array(
       'path' => $editor['library path'] . '/plugins/print',
       'buttons' => array('print' => t('Print')),

@@ -1,0 +1,31 @@
+<?php
+// $Id: spellchecker_pspell.install,v 1.1 2010/12/15 16:31:20 kenorb Exp $
+/**
+* @file
+* Install file for the Spellchecker PSpell module
+*/
+
+function spellchecker_pspell_requirements($phase) {
+    $t = get_t();
+    $pspell = function_exists('pspell_suggest'); 
+    $requirements['pspell'] = array(
+        'title' => $t('PSpell'),
+        'value' => $pspell ? 'pspell is installed correctly' : 'pspell is not installed (' . l('http://www.php.net/manual/en/pspell.installation.php', 'http://www.php.net/manual/en/pspell.installation.php'), 
+        'severity' => $pspell ? REQUIREMENT_OK : REQUIREMENT_ERROR,
+        );
+    return $requirements;
+}
+
+/**
+ * Implementation of hook_install
+ */
+function spellchecker_pspell_install() {
+}
+
+/**
+ * Implementation of hook_uninstall
+ */
+function spellchecker_pspell_uninstall() {
+    db_query("DELETE FROM {variable} WHERE name LIKE 'spellchecker_pspell_%%'");
+}
+

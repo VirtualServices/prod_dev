@@ -1,0 +1,24 @@
+<?php
+// $Id: spellchecker.install,v 1.1 2010/12/15 15:55:58 kenorb Exp $
+/**
+* @file
+* Install file for the Spellchecker module
+*/
+
+/**
+ * Implementation of hook_install
+ */
+function spellchecker_install() {
+    module_load_include('inc', 'spellchecker');
+    spellchecker_add_vocab(SPELLCHECKER_VOCAB);
+}
+
+/**
+ * Implementation of hook_uninstall
+ */
+function spellchecker_uninstall() {
+    module_load_include('inc', 'spellchecker');
+    db_query("DELETE FROM {variable} WHERE name LIKE 'spellchecker_%%'");
+    // spellchecker_del_vocab(SPELLCHECKER_VOCAB); // TODO: finish spellchecker_get_vid_by_name()
+}
+

@@ -1,0 +1,12 @@
+; $Id: spellchecker_pspell.info,v 1.1 2010/12/15 16:31:20 kenorb Exp $
+name = PSpell for Spell Checker
+description = Implements PSpell spelling library for Spell Checker
+core = 6.x
+dependencies[] = spellchecker
+
+; Information added by drupal.org packaging script on 2010-12-16
+version = "6.x-1.0"
+core = "6.x"
+project = "spellchecker"
+datestamp = "1292513528"
+

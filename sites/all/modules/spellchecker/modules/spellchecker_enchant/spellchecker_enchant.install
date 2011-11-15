@@ -1,0 +1,31 @@
+<?php
+// $Id: spellchecker_enchant.install,v 1.1 2010/12/15 16:31:20 kenorb Exp $
+/**
+* @file
+* Install file for the Spellchecker PSpell module
+*/
+
+function spellchecker_enchant_requirements($phase) {
+    $t = get_t();
+    $enchant = function_exists('enchant_broker_init'); 
+    $requirements['enchant'] = array(
+        'title' => $t('Enchant'),
+        'value' => $enchant ? 'enchant is installed correctly' : 'enchant is not installed (' . l('http://www.php.net/manual/en/enchant.installation.php', 'http://www.php.net/manual/en/enchant.installation.php'), 
+        'severity' => $enchant ? REQUIREMENT_OK : REQUIREMENT_ERROR,
+        );
+    return $requirements;
+}
+
+/**
+ * Implementation of hook_install
+ */
+function spellchecker_enchant_install() {
+}
+
+/**
+ * Implementation of hook_uninstall
+ */
+function spellchecker_enchant_uninstall() {
+    db_query("DELETE FROM {variable} WHERE name LIKE 'spellchecker_enchant_%%'");
+}
+

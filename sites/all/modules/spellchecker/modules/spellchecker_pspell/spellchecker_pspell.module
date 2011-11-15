@@ -1,0 +1,81 @@
+<?php
+// $Id: spellchecker_pspell.module,v 1.1 2010/12/15 16:31:20 kenorb Exp $
+
+/**
+ * @file
+ * @brief
+ * Implements Spell Checker for Drupal
+ *
+ * @package 	spellchecker
+ * @subpackage
+ * @author
+ */
+
+/* Note: Currently uses Drupal language global variable - activate if necessary
+*/
+
+// different spelling modes supported by aspell
+if(!defined('PSPELL_FAST'))         define('PSPELL_FAST',1);         # Fast mode (least number of suggestions)
+if(!defined('PSPELL_NORMAL'))       define('PSPELL_NORMAL',2);       # Normal mode (more suggestions)
+if(!defined('PSPELL_BAD_SPELLERS')) define('PSPELL_BAD_SPELLERS',3); # Slow mode (a lot of suggestions)
+if(!defined('ASPELL_ULTRA'))        define('ASPELL_ULTRA', 4);        # Ultra fast mode (not available in Pspell!)
+
+define('PSPELL_CASE_SENSITIVE', FALSE);
+
+/**
+ * Define default variables
+ */
+define('PSPELL_DEFAULT_SUGGESTION_MODE', PSPELL_NORMAL);
+
+/**
+ * Implementation of hook_init
+ */
+function spellchecker_pspell_init() {
+  global $language;
+  define('PSPELL_DEFAULT_LANGUAGE', $language->language);
+  define('PSPELL_DEFAULT_SPELLING', 'british');
+  define('PSPELL_DEFAULT_JARGON', '');
+  define('PSPELL_MAX_SUGGESTIONS', 5);
+}
+
+/**
+ * Implementation of hook_spellchecker
+ */
+function spellchecker_pspell_spellchecker() {
+    $name = 'pspell';
+    $config['module'][$name] = 'spellchecker_pspell';
+
+    /* engine settings */
+    $config['engine'][$name]['callback'] = 'spellchecker_pspell_op';
+    $config['engine'][$name]['file'] = $config['module'][$name] . '.inc';
+    $config['engine'][$name]['description'] = t('Use PSpell library.');
+
+    /* setting form */
+    $config['settings'][$name]['callback'] = 'spellchecker_pspell_get_admin_form';
+    $config['settings'][$name]['file'] = $config['module'][$name] . '.admin.inc';
+    $config['settings'][$name]['description'] = t('PSpell Spell Checker configuration.');
+
+    /* storage settings */
+    $config['storage'][$name]['callback'] = 'spellchecker_pspell_storage';
+    $config['storage'][$name]['file'] = $config['module'][$name] . '.inc';
+    $config['storage'][$name]['description'] = t('Use PSpell personal wordlist.');
+    return $config;
+}
+
+/**
+ * Implementation of hook_spellchecker_op
+ */
+function spellchecker_pspell_spellchecker_op($op, $word) {
+    $mode = variable_get('spellchecker_mode', module_exists('spellchecker_google') ? 'google' : NULL);
+    if ($mode == 'pspell') {
+        module_load_include('inc', 'spellchecker_pspell');
+        switch ($op) {
+            case 'add':
+                spellchecker_pspell_add_new_word_session($word);
+            break;
+            case 'remove':
+            break;
+        }
+    }
+}
+

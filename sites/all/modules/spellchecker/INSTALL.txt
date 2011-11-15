@@ -1,0 +1,33 @@
+INSTALLATION
+
+PSPELL (spellchecker_pspell):
+http://uk2.php.net/manual/en/pspell.installation.php
+On Linux:
+sudo apt-get install php5-pspell aspell-en
+(reload your Apache)
+Note: for British language, set language to: en_GB (admin/settings/spellchecker/pspell)
+
+ENCHANT (optional):
+http://www.php.net/manual/en/enchant.installation.php
+On Linux:
+sudo apt-get install hunspell enchant
+sudo pecl install enchant
+(reload your Apache)
+http://michel.weimerskirch.net/2008/04/25/php-enchant/
+
+USAGE:
+1. Enable the main module and module engine (Spellchecker PSpell or Google).
+2. Activate spellchecker for:
+   - specified content type (i.e. admin/content/node-type/page),
+   - or for CCK fields (admin/content/node-type/page/fields).
+3. Check the module settings: admin/settings/spellchecker
+
+Integration with Wysiwyg editor
+1. Install Wysiwyg module.
+2. Install Wysiwyg SpellCheck module.
+Steps for TinyMCE:
+1. Go to admin/settings/wysiwyg/profile and select profile to edit.
+   Then go to Buttons and plugins section and check the Spell Check plugin.
+2. Upgrade your spell checker (http://tinymce.moxiecode.com/download.php)
+   Path: sites/all/libraries/tinymce/jscripts/tiny_mce/plugins/spellchecker
+3. Edit your tinymce/spellcheck/config.php to choose your spell engine.
