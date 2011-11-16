@@ -1,4 +1,5 @@
 <?php
+// Small irrelevant change
 // $Id: default.settings.php,v 1.8 2007/12/20 09:35:10 goba Exp $
 
 /**
