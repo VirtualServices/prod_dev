@@ -91,7 +91,7 @@
  *   $db_url = 'mysqli://username:password@localhost/databasename';
  *   $db_url = 'pgsql://username:password@localhost/databasename';
  */
-$db_url = 'mysqli://admin:v1olet@localhost/test';
+$db_url = 'mysqli://root:v7wYq7aNJ5Cd@localhost/staging_rcpl';
 $db_prefix = '';
 
 /**
